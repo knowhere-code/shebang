@@ -263,6 +263,15 @@ ls -ld /etc/${PYRAMID_DISTR}-control/
 echo ""
 getfacl /etc/${PYRAMID_DISTR}-control/
 
+
+echo ""
+echo "***********************************************************************"
+echo " Rules for UsvTimeService"
+echo "***********************************************************************"
+
+getcap /bin/date
+getcap /sbin/hwclock
+
 echo ""
 echo "***********************************************************************"
 echo " Pyramid dirs cache info"
@@ -272,10 +281,11 @@ ls -ld /var/cache/pyramid/*/
 
 echo ""
 echo "***********************************************************************"
-echo " Pyramid dirs RDContent info"
+echo " Pyramid dirs and files RDContent info"
 echo "***********************************************************************"
 
-ls -ld /var/cache/pyramid/RDContent/*/
+ls -ld /var/cache/pyramid/RDContent/
+ls -l /var/cache/pyramid/RDContent/
 
 echo ""
 echo "***********************************************************************"

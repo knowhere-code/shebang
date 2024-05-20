@@ -266,11 +266,15 @@ getfacl /etc/${PYRAMID_DISTR}-control/
 
 echo ""
 echo "***********************************************************************"
-echo " Rules for UsvTimeService"
+echo " Cap for UsvTimeService"
 echo "***********************************************************************"
 
 getcap /bin/date
 getcap /sbin/hwclock
+
+echo "must be:
+    cap_sys_time+pie /bin/date 
+    cap_sys_time,cap_dac_override+eip /sbin/hwclock"
 
 echo ""
 echo "***********************************************************************"

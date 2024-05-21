@@ -273,8 +273,8 @@ getcap /bin/date
 getcap /sbin/hwclock
 
 echo "must be:
-    cap_sys_time+pie /bin/date 
-    cap_sys_time,cap_dac_override+eip /sbin/hwclock"
+    /bin/date = cap_sys_time+pie 
+    /sbin/hwclock = cap_sys_time, cap_dac_override+eip"
 
 echo ""
 echo "***********************************************************************"
@@ -289,7 +289,7 @@ echo " Pyramid dirs and files RDContent info"
 echo "***********************************************************************"
 
 ls -ld /var/cache/pyramid/RDContent/
-ls -l /var/cache/pyramid/RDContent/
+ls -l --group-directories-first /var/cache/pyramid/RDContent/
 
 echo ""
 echo "***********************************************************************"
@@ -308,7 +308,7 @@ echo " Pyramid dirs share"
 echo "***********************************************************************"
 
 ls -ld /usr/share/pyramid
-ls -l /usr/share/pyramid
+ls -l --group-directories-first /usr/share/pyramid
 
 echo ""
 echo "***********************************************************************"

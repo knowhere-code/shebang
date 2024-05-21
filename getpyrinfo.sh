@@ -240,7 +240,7 @@ fi
 
 if [ -n "$ASTRA_USER_PERM" ]
 then
-    echo "ASTRA USER ($USER_CS) MAX PERMISSION (MUST BE 63):"
+    echo "ASTRA USER ($USER_CS) MAX PERMISSION (MUST BE 0:63:0x0:0x0):"
     echo "$ASTRA_USER_PERM"
     echo ""
     echo "\"Command to set max permissions: sudo pdpl-user -i 63 $USER_CS\""
@@ -272,9 +272,9 @@ echo "***********************************************************************"
 getcap /bin/date
 getcap /sbin/hwclock
 
-echo "must be:
+echo "Must be:
     /bin/date = cap_sys_time+pie 
-    /sbin/hwclock = cap_sys_time, cap_dac_override+eip"
+    /sbin/hwclock = cap_dac_override,cap_sys_time+eip"
 
 echo ""
 echo "***********************************************************************"

@@ -10,7 +10,7 @@ for file in ./pyramid-control*.deb
 do
   if [ ! -e "$file" ]
   then
-    echo "$0 must be in folder with distribution!"
+    echo "$0 must be running in folder with distribution!"
     exit 1
   fi
 done

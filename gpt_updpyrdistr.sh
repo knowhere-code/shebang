@@ -7,7 +7,7 @@ if [ "$(id -u)" != 0 ]; then
 fi
 
 # Проверка наличия пакетов в текущей директории
-for pkg in pyramid-control; do
+for pkg in pyramid-control pyramid-collector; do
   if [ ! -e "./$pkg*.deb" ]; then
     echo "$0 must be running in folder with distribution!"
     exit 1
@@ -45,7 +45,7 @@ PACKAGES=(
 # Обновление пакетов
 for pkg in "${PACKAGES[@]}"; do
   if $PACKET_MANAGER_CHECK_CMD "$pkg*" | $APT_OPT &> /dev/null; then
-    $PACKET_MANAGER_COMMAND ./$pkg*.deb
+    $PACKET_MANAGER_COMMAND ./"$pkg"*.deb
   fi
 done
 

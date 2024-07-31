@@ -6,74 +6,45 @@ if [ "$(id -u)" != 0 ]; then
   exit 1
 fi
 
-for file in ./pyramid-control*.deb
-do
-  if [ ! -e "$file" ]
-  then
-    echo "$0 must be running in folder with distribution!"
-    exit 1
-  fi
-done
+# Проверка наличия пакетов в текущей директории
+if ! ls ./pyramid* &> /dev/null; then
+  echo "$0 must be running in folder with distribution!"
+  exit 1
+fi
 
-if which apt &> /dev/null;
-then
-    PACKET_MANAGER_COMMAND="apt install"
-    PACKET_MANAGER_CHECK_CMD="dpkg-query -l"
-    APT_OPT="grep ii"
+# Определение пакетного менеджера и команд
+if command -v apt &> /dev/null; then
+  PACKET_MANAGER_COMMAND="apt install -y"
+  PACKET_MANAGER_CHECK_CMD="dpkg-query -l"
+  APT_OPT="grep ii"
+elif command -v yum &> /dev/null; then
+  PACKET_MANAGER_COMMAND="yum install -y"
+  PACKET_MANAGER_CHECK_CMD="rpm -qa --last"
+  APT_OPT="cat"
 else
-    PACKET_MANAGER_COMMAND="yum install"
-    PACKET_MANAGER_CHECK_CMD="rpm -qa -last"
-    APT_OPT="cat"
+  echo "No suitable package manager found. Exiting."
+  exit 1
 fi 
 
-if $PACKET_MANAGER_CHECK_CMD "pyramid-control*" | $APT_OPT &> /dev/null;
-then
-  $PACKET_MANAGER_COMMAND ./pyramid-control*.deb
-fi
+# Массивы с именами пакетов и соответствующими шаблонами файлов
+PACKAGES=(
+  "pyramid-control"
+  "pyramid-collector"
+  "pyramid-user-web"
+  "pyramid-client-web"
+  "pyramid-integration"
+  "pyramid-csproxy"
+  "pyramid-usv"
+  "pyramid-opc-server"
+  "pyramid-opc-client"
+  "pyramid-fias"
+)
 
-if $PACKET_MANAGER_CHECK_CMD "pyramid-collector*" | $APT_OPT &> /dev/null;
-then
-  $PACKET_MANAGER_COMMAND ./pyramid-collector*.deb
-fi
-
-if $PACKET_MANAGER_CHECK_CMD "pyramid-user-web*" | $APT_OPT &> /dev/null;
-then
-  $PACKET_MANAGER_COMMAND ./pyramid-user-web*.deb
-fi
-
-if $PACKET_MANAGER_CHECK_CMD "pyramid-client-web*" | $APT_OPT &> /dev/null;
-then
-  $PACKET_MANAGER_COMMAND ./pyramid-client-web*.deb
-fi
-
-if $PACKET_MANAGER_CHECK_CMD "pyramid-integration*" | $APT_OPT &> /dev/null;
-then
-  $PACKET_MANAGER_COMMAND ./pyramid-integration*.deb
-fi
-
-if $PACKET_MANAGER_CHECK_CMD "pyramid-csproxy*" | $APT_OPT &> /dev/null;
-then
-  $PACKET_MANAGER_COMMAND ./pyramid-csproxy*.deb
-fi
-
-if $PACKET_MANAGER_CHECK_CMD "pyramid-usv*" | $APT_OPT &> /dev/null;
-then
-  $PACKET_MANAGER_COMMAND ./pyramid-usv*.deb
-fi
-
-if $PACKET_MANAGER_CHECK_CMD "pyramid-opc-server*" | $APT_OPT &> /dev/null;
-then
-  $PACKET_MANAGER_COMMAND ./pyramid-opc-server*.deb
-fi
-
-if $PACKET_MANAGER_CHECK_CMD "pyramid-opc-client*" | $APT_OPT &> /dev/null;
-then
-  $PACKET_MANAGER_COMMAND ./pyramid-opc-client*.deb
-fi
-
-if $PACKET_MANAGER_CHECK_CMD "pyramid-fias*" | $APT_OPT &> /dev/null;
-then
-  $PACKET_MANAGER_COMMAND ./pyramid-fias*.deb
-fi
+# Обновление пакетов
+for pkg in "${PACKAGES[@]}"; do
+  if $PACKET_MANAGER_CHECK_CMD "$pkg*" | $APT_OPT &> /dev/null; then
+    $PACKET_MANAGER_COMMAND ./"$pkg"*
+  fi
+done
 
 $PACKET_MANAGER_CHECK_CMD "pyramid-*" | $APT_OPT

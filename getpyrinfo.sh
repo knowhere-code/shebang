@@ -210,6 +210,8 @@ echo "***********************************************************************"
 echo " Pyramid dirs ReportHelpers and ImportSheets info"
 echo "***********************************************************************"
 # версии >= 10.9 каталог ReportHelpers теперь в БД
+echo "Now, version >= 10.9 folder ReportHelpers in BD"
+
 ls -ld /var/cache/pyramid/RDContent/ReportHelpers
 ls -l /var/cache/pyramid/RDContent/ReportHelpers
 echo ""
@@ -233,7 +235,7 @@ ls -ld /var/log/pyramid/; ls -ld /var/log/pyramid/*/
 
 echo ""
 echo "***********************************************************************"
-echo " Maybe not correct permission for pyramid dirs"
+echo " Maybe not correct permission or user for pyramid dirs"
 echo "***********************************************************************"
 
 if [ -n "$USER_CS" ] && [ $CS_STATUS -eq 1 ]; then

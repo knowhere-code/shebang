@@ -14,12 +14,12 @@ fi
 
 # Определение пакетного менеджера и команд
 if command -v apt &> /dev/null; then
-  PACKET_MANAGER_COMMAND="apt install -y"
-  PACKET_MANAGER_CHECK_CMD="dpkg-query -l"
+  PACKAGES_MANAGER_COMMAND="apt install -y"
+  PACKAGES_MANAGER_CHECK_CMD="dpkg-query -l"
   APT_OPT="grep ii"
 elif command -v yum &> /dev/null; then
-  PACKET_MANAGER_COMMAND="yum install -y"
-  PACKET_MANAGER_CHECK_CMD="rpm -qa --last"
+  PACKAGES_MANAGER_COMMAND="yum install -y"
+  PACKAGES_MANAGER_CHECK_CMD="rpm -qa --last"
   APT_OPT="cat"
 else
   echo "No suitable package manager found. Exiting."
@@ -42,9 +42,9 @@ PACKAGES=(
 
 # Обновление пакетов
 for pkg in "${PACKAGES[@]}"; do
-  if $PACKET_MANAGER_CHECK_CMD "$pkg*" | $APT_OPT &> /dev/null; then
-    $PACKET_MANAGER_COMMAND ./"$pkg"*
+  if $PACKAGES_MANAGER_CHECK_CMD "$pkg*" | $APT_OPT &> /dev/null; then
+    $PACKAGES_MANAGER_COMMAND ./"$pkg"*
   fi
 done
 
-$PACKET_MANAGER_CHECK_CMD "pyramid-*" | $APT_OPT
+$PACKAGES_MANAGER_CHECK_CMD "pyramid-*" | $APT_OPT

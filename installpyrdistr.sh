@@ -45,64 +45,47 @@ PACKAGES=(
 )
 
 SERVICES_CAPTION=(
+  "ControlService"
+  "CollectorService"
   "PyramidUserWeb"
   "PyramidClientWeb"
   "CSProxyService"
   "IntegrationService"
+  "UsvTimeService"
   "OpcUaClientsService"
   "OpcUaServersService"
 )
 
-# Обновление пакетов
+# Обновление/установка пакетов
 for pkg in "${PACKAGES[@]}"; do
 
+  echo "Try install $pkg"; echo ""
+  $PACKET_MANAGER install ./"$pkg"*
+
   if [ "$pkg" = "pyramid-control" ]; then
-
-    echo "Try install $pkg"; echo ""
-    $PACKET_MANAGER install ./"$pkg"*
-
     echo "Try copy and chmod keys"; echo ""
-
     cp -v ./p20.* /etc/pyramid-control/
     chmod -v a=rw /etc/pyramid-control/p20.*
-    sudo setfacl -m u:"$SUDO_USER":rwx /etc/pyramid-control/
-
-    echo "Try install $pkg daemon"; echo ""
-    ControlService --install
-    ControlService --start
+    setfacl -m u:"$SUDO_USER":rwx /etc/pyramid-control/
+    getfacl /etc/pyramid-control/
   fi
 
   if [ "$pkg" = "pyramid-collector" ]; then
-
-    echo "Try install $pkg"; echo ""
-    $PACKET_MANAGER install ./"$pkg"*
-
     echo "Try add user into group dialout"; echo ""
     adduser "$SUDO_USER" dialout
-
-    echo "Try install and run $pkg daemon"; echo ""
-    CollectorService --install
-    CollectorService --start
   fi
 
   if [ "$pkg" = "pyramid-usv" ]; then
-    echo "Try install $pkg"; echo ""
-    $PACKET_MANAGER install ./"$pkg"*
-
     echo "Try setcap"; echo ""
-    setcap cap_sys_time+pie /bin/date
-    setcap cap_sys_time,cap_dac_override+eip /sbin/hwclock
-    UsvTimeService --install
+    setcap -v cap_sys_time+pie /bin/date
+    setcap -v cap_sys_time,cap_dac_override+eip /sbin/hwclock
   fi
-    echo "Try install $pkg"
-    $PACKET_MANAGER install ./"$pkg"*
 done
 
 for srv in "${SERVICES_CAPTION[@]}"; do
-    echo "Try install and run Pyramid services"; echo ""
-    $srv --install
-    $srv --start
+    echo "Try install and run $srv"; echo ""
+    $srv --install 2> /dev/null
+    $srv --start 2> /dev/null
 done
 
 systemctl status Pyramid* | cat
-  exit 0

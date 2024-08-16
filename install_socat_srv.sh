@@ -33,7 +33,7 @@ SERVICE_CAPTION=usv-socat.service
 if [ -f /etc/systemd/system/$SERVICE_CAPTION ] 
 then
     echo "$SERVICE_CAPTION is already installed!"
-    systemctl status $SERVICE_CAPTION
+    systemctl status $SERVICE_CAPTION | cat
     exit 1
 fi
 
@@ -53,4 +53,4 @@ EOF
 
 systemctl enable $SERVICE_CAPTION
 systemctl start $SERVICE_CAPTION
-systemctl status $SERVICE_CAPTION
+systemctl status $SERVICE_CAPTION | cat

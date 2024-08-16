@@ -8,20 +8,20 @@ fi
 
 # Проверка наличия пакетов в текущей директории
 if ! ls ./pyramid* &> /dev/null; then
-  echo "$0 must be running in folder with distribution!"
+  echo "$0 must be running in folder with distribution!"; echo ""
   exit 1
 fi
 
 # Проверка наличия лицензионных ключей
 if ! ls ./p20.* &> /dev/null; then
-  echo "Not found licension keys!"
+  echo "Not found licension keys!"; echo ""
   exit 1
 fi
 
 # Проверка наличия установленных служб Пирамиды
-if ! ls /etc/systemd/system/Pyramid* &> /dev/null; then
-  echo "Pyramid services are already installed! Try run update script."
-  systemctl status Pyramid*
+if ls /etc/systemd/system/Pyramid* &> /dev/null; then
+  echo "Pyramid services are already installed! Try run update script."; echo ""
+  systemctl status Pyramid* | cat
   exit 1
 fi
 
@@ -58,37 +58,38 @@ for pkg in "${PACKAGES[@]}"; do
 
   if [ "$pkg" = "pyramid-control" ]; then
 
-    echo "Try install $pkg"
+    echo "Try install $pkg"; echo ""
     $PACKET_MANAGER install ./"$pkg"*
 
-    echo "Try copy and chmod keys"
+    echo "Try copy and chmod keys"; echo ""
+
     cp -v ./p20.* /etc/pyramid-control/
     chmod -v a=rw /etc/pyramid-control/p20.*
     sudo setfacl -m u:"$SUDO_USER":rwx /etc/pyramid-control/
 
-    echo "Try install $pkg daemon"
+    echo "Try install $pkg daemon"; echo ""
     ControlService --install
     ControlService --start
   fi
 
   if [ "$pkg" = "pyramid-collector" ]; then
 
-    echo "Try install $pkg"
+    echo "Try install $pkg"; echo ""
     $PACKET_MANAGER install ./"$pkg"*
 
-    echo "Try add user into group dialout"
+    echo "Try add user into group dialout"; echo ""
     adduser "$SUDO_USER" dialout
 
-    echo "Try install and run $pkg daemon"
+    echo "Try install and run $pkg daemon"; echo ""
     CollectorService --install
     CollectorService --start
   fi
 
   if [ "$pkg" = "pyramid-usv" ]; then
-    echo "Try install $pkg"
+    echo "Try install $pkg"; echo ""
     $PACKET_MANAGER install ./"$pkg"*
 
-    echo "Try setcap"
+    echo "Try setcap"; echo ""
     setcap cap_sys_time+pie /bin/date
     setcap cap_sys_time,cap_dac_override+eip /sbin/hwclock
     UsvTimeService --install
@@ -98,10 +99,10 @@ for pkg in "${PACKAGES[@]}"; do
 done
 
 for srv in "${SERVICES_CAPTION[@]}"; do
-    echo "Try install and run Pyramid services"
+    echo "Try install and run Pyramid services"; echo ""
     $srv --install
     $srv --start
 done
 
-systemctl status Pyramid*
+systemctl status Pyramid* | cat
   exit 0

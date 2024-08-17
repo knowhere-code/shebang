@@ -15,9 +15,9 @@ if ! which socat &> /dev/null
 then
     echo "Socat is not installed. Try install socat..."
     if command -v apt &>/dev/null; then
-        apt install socat
+        apt install socat -y
     else
-        yum install socat
+        yum install socat -y
     fi
 fi
 

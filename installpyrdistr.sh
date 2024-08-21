@@ -29,7 +29,18 @@ fi
 PACKAGES_MANAGER=$(command -v yum &> /dev/null && echo "yum" || echo "apt")
 
 # Массивы с именами пакетов и соответствующими шаблонами файлов
-PACKAGES=$(ls pyramid*)
+PACKAGES=(
+  "pyramid-control"
+  "pyramid-collector"
+  "pyramid-user-web"
+  "pyramid-client-web"
+  "pyramid-integration"
+  "pyramid-csproxy"
+  "pyramid-usv"
+  "pyramid-opc-server"
+  "pyramid-opc-client"
+  "pyramid-fias"
+)
 
 SERVICES_CAPTION=(
   "ControlService"
@@ -49,18 +60,18 @@ for pkg in "${PACKAGES[@]}"; do
   $PACKAGES_MANAGER install ./"$pkg"* -y
 
   case "$pkg" in
-    "pyramid-control"*)
+    "pyramid-control")
       echo "Copying and setting permissions for keys"
       cp -v ./p20.* /etc/pyramid-control/
       chmod -v a=rw /etc/pyramid-control/p20.*
       setfacl -m u:"$SUDO_USER":rwx /etc/pyramid-control/
       getfacl /etc/pyramid-control/
       ;;
-    "pyramid-collector"*)
+    "pyramid-collector")
       echo "Adding user to dialout group"
       adduser "$SUDO_USER" dialout
       ;;
-    "pyramid-usv"*)
+    "pyramid-usv")
       echo "Setting capabilities"
       setcap -v cap_sys_time+pie /bin/date
       setcap -v cap_sys_time,cap_dac_override+eip /sbin/hwclock

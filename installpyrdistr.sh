@@ -28,8 +28,6 @@ case $SRV_INDEX in
     ;;
 esac
 
-
-
 # Проверка наличия пакетов и лицензионных ключей в текущей директории
 if ! ls ./$PYRAMID_DISTR* &> /dev/null; then
   echo "$0 must be running in folder with distribution!"

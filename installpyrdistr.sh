@@ -7,8 +7,31 @@ if [ "$(id -u)" != 0 ]; then
   exit 1
 fi
 
+PYRAMID_DISTR=pyramid
+
+case $SRV_INDEX in
+    "")
+    PS3='Select distribution: '
+    select PYRAMID_DISTR in "Pyramid" "Pyrnet" 
+    do
+      break
+    done
+    ;;
+    1) 
+    ;;
+    2) 
+    PYRAMID_DISTR=pyrnet
+    ;;
+    *) 
+    echo "Command line arguments are incorrect!"
+    exit 1
+    ;;
+esac
+
+
+
 # Проверка наличия пакетов и лицензионных ключей в текущей директории
-if ! ls ./pyramid* &> /dev/null; then
+if ! ls ./$PYRAMID_DISTR* &> /dev/null; then
   echo "$0 must be running in folder with distribution!"
   exit 1
 fi
@@ -30,16 +53,16 @@ PACKAGES_MANAGER=$(command -v yum &> /dev/null && echo "yum" || echo "apt")
 
 # Массивы с именами пакетов и соответствующими шаблонами файлов
 PACKAGES=(
-  "pyramid-control"
-  "pyramid-collector"
-  "pyramid-user-web"
-  "pyramid-client-web"
-  "pyramid-integration"
-  "pyramid-csproxy"
-  "pyramid-usv"
-  "pyramid-opc-server"
-  "pyramid-opc-client"
-  "pyramid-fias"
+  "$PYRAMID_DISTR-control"
+  "$PYRAMID_DISTR-collector"
+  "$PYRAMID_DISTR-user-web"
+  "$PYRAMID_DISTR-client-web"
+  "$PYRAMID_DISTR-integration"
+  "$PYRAMID_DISTR-csproxy"
+  "$PYRAMID_DISTR-usv"
+  "$PYRAMID_DISTR-opc-server"
+  "$PYRAMID_DISTR-opc-client"
+  "$PYRAMID_DISTR-fias"
 )
 
 SERVICES_CAPTION=(
@@ -60,18 +83,18 @@ for pkg in "${PACKAGES[@]}"; do
   $PACKAGES_MANAGER install ./"$pkg"* -y
 
   case "$pkg" in
-    "pyramid-control")
+    "$PYRAMID_DISTR-control")
       echo "Copying and setting permissions for keys"
-      cp -v ./p20.* /etc/pyramid-control/
-      chmod -v a=rw /etc/pyramid-control/p20.*
-      setfacl -m u:"$SUDO_USER":rwx /etc/pyramid-control/
-      getfacl /etc/pyramid-control/
+      cp -v ./p20.* /etc/$PYRAMID_DISTR-control/
+      chmod -v a=rw /etc/$PYRAMID_DISTR-control/p20.*
+      setfacl -m u:"$SUDO_USER":rwx /etc/$PYRAMID_DISTR-control/
+      getfacl /etc/$PYRAMID_DISTR-control/
       ;;
-    "pyramid-collector")
+    "$PYRAMID_DISTR-collector")
       echo "Adding user to dialout group"
       adduser "$SUDO_USER" dialout
       ;;
-    "pyramid-usv")
+    "$PYRAMID_DISTR-usv")
       echo "Setting capabilities"
       setcap -v cap_sys_time+pie /bin/date
       setcap -v cap_sys_time,cap_dac_override+eip /sbin/hwclock

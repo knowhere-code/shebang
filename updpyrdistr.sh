@@ -6,8 +6,29 @@ if [ "$(id -u)" != 0 ]; then
   exit 1
 fi
 
+PYRAMID_DISTR=pyramid
+
+case $SRV_INDEX in
+    "")
+    PS3='Select distribution: '
+    select PYRAMID_DISTR in "Pyramid" "Pyrnet" 
+    do
+      break
+    done
+    ;;
+    1) 
+    ;;
+    2) 
+    PYRAMID_DISTR=pyrnet
+    ;;
+    *) 
+    echo "Command line arguments are incorrect!"
+    exit 1
+    ;;
+esac
+
 # Проверка наличия пакетов в текущей директории
-if ! ls ./pyramid* &> /dev/null; then
+if ! ls ./$PYRAMID_DISTR* &> /dev/null; then
   echo "$0 must be running in folder with distribution!"
   exit 1
 fi
@@ -28,16 +49,16 @@ fi
 
 # Массивы с именами пакетов и соответствующими шаблонами файлов
 PACKAGES=(
-  "pyramid-control"
-  "pyramid-collector"
-  "pyramid-user-web"
-  "pyramid-client-web"
-  "pyramid-integration"
-  "pyramid-csproxy"
-  "pyramid-usv"
-  "pyramid-opc-server"
-  "pyramid-opc-client"
-  "pyramid-fias"
+  "$PYRAMID_DISTR-control"
+  "$PYRAMID_DISTR-collector"
+  "$PYRAMID_DISTR-user-web"
+  "$PYRAMID_DISTR-client-web"
+  "$PYRAMID_DISTR-integration"
+  "$PYRAMID_DISTR-csproxy"
+  "$PYRAMID_DISTR-usv"
+  "$PYRAMID_DISTR-opc-server"
+  "$PYRAMID_DISTR-opc-client"
+  "$PYRAMID_DISTR-fias"
 )
 
 # Обновление пакетов
@@ -47,4 +68,4 @@ for pkg in "${PACKAGES[@]}"; do
   fi
 done
 
-$PACKAGES_MANAGER_CHECK_CMD "pyramid-*" | $APT_OPT
+$PACKAGES_MANAGER_CHECK_CMD "$PYRAMID_DISTR-*" | $APT_OPT

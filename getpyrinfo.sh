@@ -1,6 +1,6 @@
 #!/bin/bash
 # Выдать скрипту права sudo chmod +x getpyrinfo.sh
-# Запускать командой sudo ./getpyrinfo.sh &> getpyrinfo.log
+# Запускать командой sudo ./getpyrinfo.sh или sudo bash ./getpyrinfo.sh
 # На выходе архив с конфигурацией pyrconfig.tar.gz и лог getpyrinfo.log
 
 declare -A PATHS=(
@@ -26,8 +26,11 @@ declare -A PATHS=(
     [CSPROX_NET]=/usr/lib/pyrnet-csproxy
 )
 
+# 
+exec 1>getpyrinfo.log 2>&1
+
 PYRAMID_DISTR=pyramid
-CS_STATUS=0
+CS_INSTALLED=0
 
 echo "***********************************************************************"
 echo " Quick get Pyramid 2.0 information script start..."
@@ -41,7 +44,7 @@ for key in CS COL UWEB; do
 done
 
 if [ "$(id -u)" != 0 ]; then
-  echo "This script must be run as root. 'sudo $0 &> getpyrinfo.log'"
+  echo "This script must be run as root. 'sudo $0'"
   exit 1
 fi
 
@@ -89,7 +92,7 @@ echo "***********************************************************************"
 for key in CS UWEB CWEB COL FIAS INTER USV CSPROX COPC SOPC; do
     if [ -d "${PATHS[$key]}" ] || [ -d "${PATHS[${key}_NET]}" ]; then
         echo "Installed ${PYRAMID_DISTR}-$(echo $key | tr '[:upper:]' '[:lower:]')"
-        [ "$key" = "CS" ] && CS_STATUS=1
+        [ "$key" = "CS" ] && CS_INSTALLED=1
     fi
 done
 
@@ -238,7 +241,7 @@ echo "***********************************************************************"
 echo " Maybe not correct permission or user for pyramid dirs"
 echo "***********************************************************************"
 
-if [ -n "$USER_CS" ] && [ $CS_STATUS -eq 1 ]; then
+if [ -n "$USER_CS" ] && [ $CS_INSTALLED -eq 1 ]; then
     find /var/cache/pyramid -type d \( -not -perm 777 -and -not -user "$USER_CS" \) -ls
     find /var/log/pyramid -type d \( -not -perm 777 -and -not -user "$USER_CS" \) -ls
     find /var/cache/pyramid -type f \( -not -perm 666 -and -not -user "$USER_CS" \) -ls

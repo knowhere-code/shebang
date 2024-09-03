@@ -27,7 +27,7 @@ declare -A PATHS=(
 )
 
 # 
-exec 1>getpyrinfo.log 2>&1
+[ -z "$1" ] && exec 1>getpyrinfo.log 2>&1
 
 PYRAMID_DISTR=pyramid
 CS_INSTALLED=0

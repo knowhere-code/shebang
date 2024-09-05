@@ -10,21 +10,16 @@ PYRAMID_DISTR=pyramid
 
 case $SRV_INDEX in
     "")
-    PS3='Select distribution: '
+    PS3='Select index distribution: '
     select PYRAMID_DISTR in "Pyramid" "Pyrnet" 
     do
       break
     done
     ;;
-    1) 
-    ;;
-    2) 
-    PYRAMID_DISTR=pyrnet
-    ;;
-    *) 
-    echo "Command line arguments are incorrect!"
-    exit 1
-    ;;
+    1) ;;
+    2) PYRAMID_DISTR=pyrnet ;;
+    *) echo "Command line arguments are incorrect!"
+    exit 1 ;;
 esac
 
 # Проверка наличия пакетов в текущей директории

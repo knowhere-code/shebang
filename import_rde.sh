@@ -2,6 +2,8 @@
 
 PATH_TO_RDE=$1
 
+[ -z "$PATH_TO_RDE" ] && echo "Path not found. sudo bash $0 /path/to/Last.rde" && exit 1
+
 /usr/lib/pyramid-control/RDMigrate I -R -F="$PATH_TO_RDE" -HISTORY=1
 
 

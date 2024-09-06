@@ -9,27 +9,19 @@ fi
 
 PYRAMID_DISTR=pyramid
 
-case $SRV_INDEX in
-    "")
-    PS3='Select distribution: '
-    select PYRAMID_DISTR in "Pyramid" "Pyrnet" 
-    do
-      break
-    done
-    ;;
-    1) 
-    ;;
-    2) 
-    PYRAMID_DISTR=pyrnet
-    ;;
-    *) 
-    echo "Command line arguments are incorrect!"
-    exit 1
-    ;;
-esac
+PS3='Select index distribution: '
+
+select opt in "Pyramid" "Pyrnet"
+do
+  case $opt in
+      "Pyramid") break ;;
+      "Pyrnet") PYRAMID_DISTR=pyrnet; break ;;
+      *) echo "Command line arguments are incorrect!"; exit 1 ;;
+  esac
+done     
 
 # Проверка наличия пакетов и лицензионных ключей в текущей директории
-if ! ls ./$PYRAMID_DISTR* &> /dev/null; then
+if ! ls ./$PYRAMID_DISTR-* &> /dev/null; then
   echo "$0 must be running in folder with distribution!"
   exit 1
 fi

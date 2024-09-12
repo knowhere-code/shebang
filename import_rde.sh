@@ -1,17 +1,13 @@
 #!/bin/bash
 
 PATH_TO_RDE=$1
-
-[ -z "$PATH_TO_RDE" ] && echo "Path not found. sudo bash $0 /path/to/Last.rde" && exit 1
-
-/usr/lib/pyramid-control/RDMigrate I -R -F="$PATH_TO_RDE" -HISTORY=1
-
-
+WR=
+HISTORY=
 
 function input_yes_no() {
     while read -r answer; do
         case "${answer}" in
-        "Yes" | "y" | "yes" | "")
+        "Yes" | "y" | "yes")
             return 0
             ;;
         "No" | "n" | "no")
@@ -24,8 +20,12 @@ function input_yes_no() {
     done
 }
 
-# if input_yes_no ; then
-#     echo "yes"
-# else
-#     echo "no"
-# fi
+[ -z "$PATH_TO_RDE" ] && echo "Path not found. sudo bash $0 /path/to/Last.rde" && exit 1
+[ "$2" = "-h" ] && HISTORY="-HISTORY=1"
+echo "Clear BD?"
+if input_yes_no ; then
+    WR="-R"
+fi
+/usr/lib/pyramid-control/RDMigrate I -F="$PATH_TO_RDE" $HISTORY $WR
+
+

@@ -11,7 +11,7 @@ function input_yes_no() {
             return 0
             ;;
         "No" | "n" | "no" | "")
-            return 1
+            echo "No"; return 1
             ;;
         *)
             echo "Please enter 'y' or 'n': "

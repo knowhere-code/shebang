@@ -39,7 +39,15 @@ if ls /etc/systemd/system/Pyramid* &> /dev/null; then
 fi
 
 # Определение пакетного менеджера
-PACKAGES_MANAGER=$(command -v yum &> /dev/null && echo "yum" || echo "apt")
+#PACKAGES_MANAGER=$(command -v yum &> /dev/null && echo "yum" || echo "apt")
+
+PACKAGES_MANAGER="apt"
+# Определение пакетного менеджера
+if command -v yum &> /dev/null; then
+  PACKAGES_MANAGER="yum"
+elif command -v apt-get &> /dev/null; then #alt linux
+  PACKAGES_MANAGER="apt-get"
+fi 
 
 # Массивы с именами пакетов и соответствующими шаблонами файлов
 PACKAGES=(

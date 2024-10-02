@@ -41,13 +41,17 @@ fi
 # Определение пакетного менеджера
 #PACKAGES_MANAGER=$(command -v yum &> /dev/null && echo "yum" || echo "apt")
 
-PACKAGES_MANAGER="apt"
 # Определение пакетного менеджера
 if command -v yum &> /dev/null; then
   PACKAGES_MANAGER="yum"
-elif command -v apt-get &> /dev/null; then #alt linux
+elif command -v apt &> /dev/null; then
+  PACKAGES_MANAGER="apt"
+elif command -v apt-get &> /dev/null; then
   PACKAGES_MANAGER="apt-get"
-fi 
+else
+  echo "No compatible package manager found (yum, apt-get, or apt)."
+  exit 1
+fi
 
 # Массивы с именами пакетов и соответствующими шаблонами файлов
 PACKAGES=(

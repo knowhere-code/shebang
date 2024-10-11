@@ -6,4 +6,3 @@ PATH_TO_SCRIPT=$1
 
 /usr/lib/pyramid-control/ObjStudioConsole -s "$PATH_TO_RDE" -l "ServiceCore"
 
-

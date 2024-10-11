@@ -112,6 +112,7 @@ for srv in "${SERVICES_CAPTION[@]}"; do
   echo "Installing and starting $srv"
   $srv --install 2> /dev/null
   $srv --start 2> /dev/null
+  sleep 5
 done
 
 systemctl status Pyramid* | cat

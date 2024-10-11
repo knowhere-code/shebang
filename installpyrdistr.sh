@@ -78,8 +78,11 @@ SERVICES_CAPTION=(
 # Обновление/установка пакетов и настройка служб
 for pkg in "${PACKAGES[@]}"; do
   echo "Trying to install $pkg"
+  if ! ls ./"$pkg"* &> /dev/null; then 
+    echo "$pkg distr not found!"
+    continue
+  fi
   $PACKAGES_MANAGER install ./"$pkg"* -y
-
   case "$pkg" in
     "$PYRAMID_DISTR-control")
       echo "Copying and setting permissions for keys"

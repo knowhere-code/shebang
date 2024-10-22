@@ -25,7 +25,6 @@ done
 
 read -rp "Enter ip new adress local host: " IP
 
-
 if ! echo "${IP}" | grep -q -E "^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+\$" &> /dev/null; then
   echo "Invalid IP"; exit 1
 fi
@@ -34,7 +33,7 @@ echo "Masking NetworkManager..."
 systemctl stop NetworkManager
 systemctl --now mask NetworkManager
 
-echo "Create /etc/network/interfaces"
+echo "Create config /etc/network/interfaces"
 
 cat << EOF > /etc/network/interfaces
 auto lo
@@ -57,10 +56,8 @@ fi
 echo "DNS config..."
 echo "nameserver 192.168.10.8" > /etc/resolv.conf
 
-#/etc/init.d/networking restart
+echo "Try UP network interface $ETH"
+systemctl restart ifupdown-pre.service && systemctl restart networking.service
+echo "Done"
 
-# echo "Try UP network interface $ETH"
-#ip link set dev {DEVICE} {up|down}
-# ifdown "$ETH" && ifup "$ETH"
-# echo "You must restart OS !!!"
 

@@ -2,7 +2,8 @@
 
 if [ "$(id -u)" != 0 ]; then
   echo "This script must be run as root. 'sudo $0'"
-  exit 1
+  sudo "$0" "$@"
+  exit
 fi
 
 DNS=192.168.10.8
@@ -28,34 +29,34 @@ function input_yes_no() {
 # ETH_LIST=($(ls /sys/class/net))
 
 echo "Select network interface:"
-select opt in $(ls /sys/class/net)
-do
-  echo "You have chosen $opt"
-  ETH=$opt
-  break
+select opt in $(ls /sys/class/net); do
+  if [ -n "$opt" ] && [ "$opt" != "lo" ]; then
+    echo "You have chosen $opt"
+    ETH=$opt
+    break
+  else
+    echo "Invalid choice. Please select a valid network interface."
+  fi
 done
 
- if [ -z "$ETH" ];
- then
-    echo "Network interface incorrect"
-    exit 1
- fi
+read -rp "Enter IP address (169.254.x.x) for local host: " IP
 
-read -rp "Enter ip adress (169.254.x.x) local host: " IP
-
-if ! echo "${IP}" | grep -q -E "^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+\$" &> /dev/null; then
-  echo "Invalid IP"; exit 1
+# Improved IP address validation
+if ! [[ $IP =~ ^169\.254\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+  echo "Invalid IP address format. Please provide a valid IP (e.g., 169.254.x.x)."
+  exit 1
 fi
 
 echo "Masking NetworkManager..."
 systemctl stop NetworkManager
 systemctl --now mask NetworkManager
 
-echo "Create config /etc/network/interfaces"
+echo "Creating config /etc/network/interfaces"
 
 cat << EOF > /etc/network/interfaces
 auto lo
 iface lo inet loopback
+
 auto $ETH
 iface $ETH inet static
 address $IP
@@ -64,22 +65,25 @@ gateway 169.254.1.254
 EOF
 
 if ifquery "$ETH" &> /dev/null; then
-    echo "Check net config - Ok"
+    echo "Network configuration for $ETH is valid."
 else
-    echo "Check net config - Error"
+    echo "Error in network configuration for $ETH."
     ifquery "$ETH"
     exit 1
 fi
 
-echo "DNS config..."
+echo "Configuring DNS..."
 echo "nameserver $DNS" > /etc/resolv.conf
 
-echo "You must restart OS. Please enter 'y' or 'n'"
+echo "You must restart the OS for changes to take effect. Would you like to restart now? (y/n)"
 if input_yes_no ; then
     reboot -f
+else
+    echo "Please reboot manually to apply changes."
 fi
 
-# echo "Try UP network interface $ETH"
+# Optionally: Uncomment these lines if you want to restart network interface instead of rebooting
+# echo "Trying to bring up network interface $ETH"
 # systemctl restart ifupdown-pre.service && systemctl restart networking.service
 # ifdown "$ETH" && ifup "$ETH"
-# echo "Done"
+# echo "Network interface $ETH is up and running."

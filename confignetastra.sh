@@ -41,7 +41,7 @@ done
     exit 1
  fi
 
-read -rp "Enter ip new adress (169.254.x.x) local host: " IP
+read -rp "Enter ip adress (169.254.x.x) local host: " IP
 
 if ! echo "${IP}" | grep -q -E "^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+\$" &> /dev/null; then
   echo "Invalid IP"; exit 1

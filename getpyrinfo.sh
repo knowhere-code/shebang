@@ -26,7 +26,7 @@ declare -A PATHS=(
     [CSPROX_NET]=/usr/lib/pyrnet-csproxy
 )
 
-# 
+# Аргументов нет - все выводы (stdout и stderr) в лог-файл.
 [ -z "$1" ] && exec 1>getpyrinfo.log 2>&1
 
 PYRAMID_DISTR=pyramid

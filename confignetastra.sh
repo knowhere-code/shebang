@@ -5,6 +5,24 @@ if [ "$(id -u)" != 0 ]; then
   exit 1
 fi
 
+DNS=192.168.10.8
+
+function input_yes_no() {
+    while read -r answer; do
+        case "${answer}" in
+        "Yes" | "y" | "yes")
+            return 0
+            ;;
+        "No" | "n" | "no" | "")
+            echo "No"; return 1
+            ;;
+        *)
+            echo "Please enter 'y' or 'n': "
+            ;;
+        esac
+    done
+}
+
 #ETH=$(ip -br link show | awk '{print $1}' | tail -1)
 # IFS=$'\n'
 # ETH_LIST=($(ls /sys/class/net))
@@ -23,7 +41,7 @@ done
     exit 1
  fi
 
-read -rp "Enter ip new adress local host: " IP
+read -rp "Enter ip new adress (169.254.x.x) local host: " IP
 
 if ! echo "${IP}" | grep -q -E "^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+\$" &> /dev/null; then
   echo "Invalid IP"; exit 1
@@ -54,10 +72,14 @@ else
 fi
 
 echo "DNS config..."
-echo "nameserver 192.168.10.8" > /etc/resolv.conf
+echo "nameserver $DNS" > /etc/resolv.conf
 
-echo "Try UP network interface $ETH"
-systemctl restart ifupdown-pre.service && systemctl restart networking.service
-echo "Done"
+echo "You must restart OS. Please enter 'y' or 'n'"
+if input_yes_no ; then
+    reboot -f
+fi
 
-
+# echo "Try UP network interface $ETH"
+# systemctl restart ifupdown-pre.service && systemctl restart networking.service
+# ifdown "$ETH" && ifup "$ETH"
+# echo "Done"

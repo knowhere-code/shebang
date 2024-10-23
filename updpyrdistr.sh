@@ -3,7 +3,8 @@
 
 if [ "$(id -u)" != 0 ]; then
   echo "This script must be run as root. 'sudo $0'"
-  exit 1
+  sudo "$0" "$@"
+  exit
 fi
 
 PYRAMID_DISTR=pyramid

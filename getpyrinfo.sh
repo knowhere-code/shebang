@@ -26,7 +26,7 @@ declare -A PATHS=(
     [CSPROX_NET]=/usr/lib/pyrnet-csproxy
 )
 
-# 
+# Аргументов нет - все выводы (stdout и stderr) в лог-файл.
 [ -z "$1" ] && exec 1>getpyrinfo.log 2>&1
 
 PYRAMID_DISTR=pyramid
@@ -45,7 +45,8 @@ done
 
 if [ "$(id -u)" != 0 ]; then
   echo "This script must be run as root. 'sudo $0'"
-  exit 1
+  sudo "$0" "$@"
+  exit
 fi
 
 echo ""

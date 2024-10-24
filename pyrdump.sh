@@ -3,7 +3,7 @@
 # Запускать командой sudo ./getpyrinfo.sh или sudo bash ./getpyrinfo.sh
 # На выходе архив с конфигурацией pyrconfig.tar.gz и лог getpyrinfo.log
 
-declare -A PATHS=(
+declare -a PATHS=(
     [CS]=/usr/lib/pyramid-control
     [UWEB]=/usr/lib/pyramid-user-web
     [CWEB]=/usr/lib/pyramid-client-web

@@ -1,7 +1,7 @@
 #!/bin/bash
-# Выдать скрипту права sudo chmod +x getpyrinfo.sh
-# Запускать командой sudo ./getpyrinfo.sh или sudo bash ./getpyrinfo.sh
-# На выходе архив с конфигурацией pyrconfig.tar.gz и лог getpyrinfo.log
+# Выдать скрипту права sudo chmod +x infopyrdump.sh
+# Запускать командой sudo ./infopyrdump.sh или sudo bash ./infopyrdump.sh
+# На выходе архив с конфигурацией pyrconfig.tar.gz и лог infopyrdump.log
 
 declare -a PATHS=(
     [CS]=/usr/lib/pyramid-control
@@ -27,7 +27,7 @@ declare -a PATHS=(
 )
 
 # Аргументов нет - все выводы (stdout и stderr) в лог-файл.
-[ -z "$1" ] && exec 1>getpyrinfo.log 2>&1
+[ -z "$1" ] && exec 1>infopyrdump.log 2>&1
 
 PYRAMID_DISTR=pyramid
 CS_INSTALLED=0

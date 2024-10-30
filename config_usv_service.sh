@@ -20,7 +20,7 @@ else
 fi
 
 USV_TYPE="Usv3"
-USV_PASS="001234"
+USV2_PASS="001234"
 
 echo "Select type of USV ($USV_TYPE):"
 select opt in "Usv3" "Usv2"; do
@@ -37,21 +37,29 @@ select opt in "Usv3" "Usv2"; do
 done
 
 if [ $USV_TYPE = "Usv2" ]; then
-
+    read -rp "Enter password for USV2 ($USV2_PASS):" USV2_PASS
+    if [ -z "$USV2_PASS" ]; then
+        USV2_PASS="001234"
+        echo "You have chosen $USV2_PASS"
+    fi
 fi
 
-
-
+USVCOM=/dev/ttyS0
+read -rp "Enter name of com port ($USVCOM):" USVCOM
+    if [ -z "$USVCOM" ]; then
+        USVCOM="/dev/ttyS0"
+        echo "You have chosen $USVCOM"
+    fi
 
 
 cat << EOF > /var/cache/pyramid/UsvTime.settings
 <UsvSettings>
   <CultureCode>ru-RU</CultureCode>
   <UsvType>$USV_TYPE</UsvType>
-  <UsvCom>/dev/ttyS0</UsvCom>
+  <UsvCom>$USVCOM</UsvCom>
   <UsvLogin>
   </UsvLogin>
-  <UsvPassword>001234</UsvPassword>
+  <UsvPassword>$USV2_PASS</UsvPassword>
   <UsvAutoSynchro>1</UsvAutoSynchro>
   <UsvCheckStatus>1</UsvCheckStatus>
   <UsvSynchroPeriod>3600</UsvSynchroPeriod>

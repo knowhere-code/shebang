@@ -1,46 +1,45 @@
 #!/bin/bash
 
-# Функция для ввода Да/Нет
 function input_yes_no() {
     while read -r answer; do
-        case "${answer,,}" in  # преобразование в нижний регистр для простоты
-            "yes" | "y")
-                return 0
-                ;;
-            "no" | "n" | "")
-                return 1
-                ;;
-            *)
-                echo "Введите 'y' или 'n': "
-                ;;
+        case "${answer,,}" in
+        "Yes" | "y" | "yes")
+            return 0
+            ;;
+        "No" | "n" | "no" | "")
+            echo "No"; return 1
+            ;;
+        *)
+            echo "Please enter 'y' or 'n': "
+            ;;
         esac
     done
 }
 
-# Проверка на запуск от root и от правильного пользователя
+# Проверка на запуск от root, sudo 
 if [ "$(id -u)" == 0 ]; then
-    echo "Скрипт должен выполняться от пользователя UsvTimeService!"
+    echo "Скрипт должен выполняться от пользователя под которым запущена служба UsvTimeService!"
     exit 1
 fi
 
-TEMPLATE_USV="UsvTime"
+TEMPLATE_USV="UsvTimeService"
 PID=$(pgrep -i "${TEMPLATE_USV}*")
 if [ -n "$PID" ]; then
     echo "Останавливаем службу UsvTimeService..."
     sudo UsvTimeService --stop
 fi
 
-# Путь к файлу настроек
 PATH_TO_USV_TIME_SET="/var/cache/pyramid/UsvTime.settings"
-USER_OWNER=$(stat -c '%U' "$PATH_TO_USV_TIME_SET")
 # Проверка существования файла настроек и пользователя-владельца
 if [ -f "$PATH_TO_USV_TIME_SET" ]; then
+    USER_OWNER=$(stat -c '%U' "$PATH_TO_USV_TIME_SET")
     if [ "$USER_OWNER" != "$USER" ]; then
-        echo "Скрипт должен выполняться от пользователя $USER_OWNER!"
+        echo "Скрипт должен выполняться от пользователя $USER_OWNER"
         exit 1
     fi
 else
-    echo "Файл $PATH_TO_USV_TIME_SET не найден. Выполните: sudo UsvTimeService --start и sudo UsvTimeService --stop"
+    echo "Файл конфигурации $PATH_TO_USV_TIME_SET не найден."
+    echo "Выполните: sudo UsvTimeService --start и sudo UsvTimeService --stop"
     exit 1
 fi
 
@@ -67,26 +66,30 @@ done
 if [ "$USV_TYPE" = "Usv2" ]; then
     read -rp "Введите пароль для USV2 (по умолчанию $USV2_PASS):" input_pass
     USV2_PASS="${input_pass:-$USV2_PASS}"
-    echo "Вы ввели пароль $USV2_PASS"
+    echo "Введено $USV2_PASS"
 fi
 
 # Запрос имени порта
 read -rp "Введите имя COM-порта (по умолчанию $USVCOM):" input_com
 USVCOM="${input_com:-$USVCOM}"
-echo "Вы выбрали $USVCOM"
+if ! ls "$USVCOM" &> /dev/null; then
+    echo "$USVCOM не найден!"
+fi
+echo "Введено $USVCOM"
 
 # Регистрация событий в Pyramid
-echo "Регистрировать события в Pyramid? (y/n)"
+echo "Регистрировать события в Пирамиде? (y/n)"
 if input_yes_no; then
     REGEVENTS=1
-    read -rp "Введите IP-адрес ControlService (по умолчанию $IP):" input_ip
+    read -rp "Укажите IP-адрес ControlService (по умолчанию $IP):" input_ip
     IP="${input_ip:-$IP}"
-
+   
     # Проверка формата IP-адреса
-    if ! [[ $IP =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]] || [[ $(echo "$IP" | awk -F '.' '{for(i=1;i<=4;i++) if($i>255) exit 1}') ]]; then
+    if ! [[ $IP =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]]; then
         echo "Неверный формат IP-адреса. Укажите правильный IP."
         exit 1
     fi
+    echo "Введено $IP"
 fi
 
 # Запись настроек в файл

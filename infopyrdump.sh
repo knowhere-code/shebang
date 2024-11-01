@@ -3,7 +3,7 @@
 # Запускать командой sudo ./infopyrdump.sh или sudo bash ./infopyrdump.sh
 # На выходе архив с конфигурацией pyrconfig.tar.gz и лог infopyrdump.log
 
-declare -a PATHS=(
+declare -A PATHS=(
     [CS]=/usr/lib/pyramid-control
     [UWEB]=/usr/lib/pyramid-user-web
     [CWEB]=/usr/lib/pyramid-client-web

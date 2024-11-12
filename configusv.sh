@@ -51,7 +51,7 @@ IP="127.0.0.1"
 REGEVENTS=0
 
 # Выбор типа USV
-echo "Выберите тип USV:"
+PS3="Укажите тип USV:"
 select type in "Usv3" "Usv2"; do
     if [ -n "$type" ]; then
         USV_TYPE=$type

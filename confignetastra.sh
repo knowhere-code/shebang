@@ -7,6 +7,7 @@ if [ "$(id -u)" != 0 ]; then
 fi
 
 DNS=192.168.10.8
+GATEWAY=169.254.1.254
 
 function input_yes_no() {
     while read -r answer; do
@@ -28,7 +29,7 @@ function input_yes_no() {
 # IFS=$'\n'
 # ETH_LIST=($(ls /sys/class/net))
 
-echo "Select network interface:"
+PS3="Select network interface: "
 select opt in $(ls /sys/class/net); do
   if [ -n "$opt" ] && [ "$opt" != "lo" ]; then
     echo "You have chosen $opt"
@@ -61,7 +62,7 @@ auto $ETH
 iface $ETH inet static
 address $IP
 netmask 255.255.0.0
-gateway 169.254.1.254
+gateway $GATEWAY
 EOF
 
 if ifquery "$ETH" &> /dev/null; then

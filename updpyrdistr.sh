@@ -7,21 +7,25 @@ if [ "$(id -u)" != 0 ]; then
   exit
 fi
 
-PYRAMID_DISTR=pyramid
+# PYRAMID_DISTR=pyramid
 
-PS3='Select index distribution: '
+# PS3='Select index distribution: '
 
-select opt in "Pyramid" "Pyrnet"
-do
-  case $opt in
-      "Pyramid") break ;;
-      "Pyrnet") PYRAMID_DISTR=pyrnet; break ;;
-      *) echo "Command line arguments are incorrect!"; exit 1 ;;
-  esac
-done     
+# select opt in "Pyramid" "Pyrnet"
+# do
+#   case $opt in
+#       "Pyramid") break ;;
+#       "Pyrnet") PYRAMID_DISTR=pyrnet; break ;;
+#       *) echo "Command line arguments are incorrect!"; exit 1 ;;
+#   esac
+# done     
 
 # Проверка наличия пакетов в текущей директории
-if ! ls ./$PYRAMID_DISTR-* &> /dev/null; then
+if ls ./pyrnet-* &> /dev/null; then
+  PYRAMID_DISTR=pyrnet
+elif ls ./pyramid-* &> /dev/null; then
+  PYRAMID_DISTR=pyramid
+else
   echo "$0 must be running in folder with distribution!"
   exit 1
 fi

@@ -19,7 +19,7 @@ function input_yes_no() {
             echo "No"; return 1
             ;;
         *)
-            echo "Please enter 'y' or 'n': "
+            echo -n "Please enter 'y' or 'n': "
             ;;
         esac
     done
@@ -76,7 +76,7 @@ fi
 echo "Configuring DNS..."
 echo "nameserver $DNS" > /etc/resolv.conf
 
-echo "You must restart the OS for changes to take effect. Would you like to restart now? (y/n)"
+echo -n "You must restart the OS for changes to take effect. Would you like to restart now? (y/n): "
 if input_yes_no ; then
     reboot -f
 else

@@ -10,7 +10,7 @@ function input_yes_no() {
             echo "No"; return 1
             ;;
         *)
-            echo "Please enter 'y' or 'n': "
+            echo -n "Please enter 'y' or 'n': "
             ;;
         esac
     done
@@ -78,7 +78,7 @@ fi
 echo "Введено $USVCOM"
 
 # Регистрация событий в Pyramid
-echo "Регистрировать события в Пирамиде? (y/n)"
+echo -n "Регистрировать события в Пирамиде? (y/n):"
 if input_yes_no; then
     REGEVENTS=1
     read -rp "Укажите IP-адрес ControlService (по умолчанию $IP):" input_ip

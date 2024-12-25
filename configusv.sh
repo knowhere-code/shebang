@@ -3,10 +3,10 @@
 function input_yes_no() {
     while read -r answer; do
         case "${answer,,}" in
-        "Yes" | "y" | "yes")
+        "y" | "yes")
             return 0
             ;;
-        "No" | "n" | "no" | "")
+        "n" | "no" | "")
             echo "No"; return 1
             ;;
         *)

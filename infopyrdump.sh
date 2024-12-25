@@ -33,7 +33,7 @@ PYRAMID_DISTR=pyramid
 CS_INSTALLED=0
 
 echo "***********************************************************************"
-echo " Quick get Pyramid 2.0 information script start..."
+echo " Quick get Pyramid 2.0 information script start... $(date)"
 echo "***********************************************************************"
 
 for key in CS COL UWEB; do

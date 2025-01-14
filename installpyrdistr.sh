@@ -19,8 +19,13 @@ fi
 #       "Pyrnet") PYRAMID_DISTR=pyrnet; break ;;
 #       *) echo "Command line arguments are incorrect!"; exit 1 ;;
 #   esac
-# done     
+# done  
 
+RED_OS=false
+
+if grep "RED OS" /etc/os-release &> /dev/null; then
+  RED_OS=true
+fi
 # Проверка наличия пакетов и лицензионных ключей в текущей директории
 if ls ./pyrnet-* &> /dev/null; then
   PYRAMID_DISTR=pyrnet
@@ -99,11 +104,30 @@ for pkg in "${PACKAGES[@]}"; do
       chmod -v a=rw /etc/$PYRAMID_DISTR-control/p20.*
       setfacl -m u:"$SUDO_USER":rwx /etc/$PYRAMID_DISTR-control/
       getfacl /etc/$PYRAMID_DISTR-control/
+
+      if  $RED_OS; then
+        CSConfigConsole
+      fi
       ;;
     "$PYRAMID_DISTR-collector")
       echo "Adding user to dialout group"
-      adduser "$SUDO_USER" dialout
+      if ! adduser "$SUDO_USER" dialout &> /dev/null; then
+        usermod -a -G dialout "$SUDO_USER" # for RedOS
+      fi
       ;;
+
+    "$PYRAMID_DISTR-user-web")
+      if $RED_OS; then
+        PyramidUserWebConfigConsole
+      fi
+    ;;
+
+    "$PYRAMID_DISTR-client-web")
+      if $RED_OS; then
+        PyramidClientWebConfigConsole
+      fi
+    ;;
+
     "$PYRAMID_DISTR-usv")
       echo "Setting capabilities"
       setcap -v cap_sys_time+pie /bin/date

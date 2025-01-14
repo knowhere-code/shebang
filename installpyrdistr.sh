@@ -104,8 +104,7 @@ for pkg in "${PACKAGES[@]}"; do
       chmod -v a=rw /etc/$PYRAMID_DISTR-control/p20.*
       setfacl -m u:"$SUDO_USER":rwx /etc/$PYRAMID_DISTR-control/
       getfacl /etc/$PYRAMID_DISTR-control/
-
-      if  $RED_OS; then
+      if $RED_OS; then
         CSConfigConsole
       fi
       ;;

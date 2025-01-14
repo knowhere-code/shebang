@@ -23,7 +23,7 @@ fi
 
 RED_OS=false
 
-if grep "RED OS" /etc/os-release &> /dev/null; then
+if grep "RED OS" /etc/os-release &> /dev/null || grep "altlinux" /etc/os-release &> /dev/null; then
   RED_OS=true
 fi
 # Проверка наличия пакетов и лицензионных ключей в текущей директории

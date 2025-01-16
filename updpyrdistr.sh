@@ -39,6 +39,10 @@ elif command -v yum &> /dev/null; then
   PACKAGES_MANAGER_COMMAND="yum install -y"
   PACKAGES_MANAGER_CHECK_CMD="rpm -qa --last"
   APT_OPT="grep x86"
+ elif command -v dnf &> /dev/null; then
+  PACKAGES_MANAGER_COMMAND="dnf install -y"
+  PACKAGES_MANAGER_CHECK_CMD="rpm -qa --last"
+  APT_OPT="grep x86" 
 elif command -v apt-get &> /dev/null; then #alt linux
   PACKAGES_MANAGER_COMMAND="apt-get install -y"
   PACKAGES_MANAGER_CHECK_CMD="rpm -qa --last"

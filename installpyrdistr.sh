@@ -54,6 +54,8 @@ fi
 # Определение пакетного менеджера
 if command -v yum &> /dev/null; then
   PACKAGES_MANAGER="yum"
+elif command -v dnf &> /dev/null; then
+  PACKAGES_MANAGER="dnf"
 elif command -v apt &> /dev/null; then
   PACKAGES_MANAGER="apt"
 elif command -v apt-get &> /dev/null; then
@@ -100,7 +102,9 @@ for pkg in "${PACKAGES[@]}"; do
   case "$pkg" in
     "$PYRAMID_DISTR-control")
       echo "Copying and setting permissions for keys"
-      cp -v ./p20.* /etc/$PYRAMID_DISTR-control/
+      if ! cp -v ./p20.* "/etc/$PYRAMID_DISTR-control/"; then
+        exit 1
+      fi
       chmod -v a=rw /etc/$PYRAMID_DISTR-control/p20.*
       setfacl -m u:"$SUDO_USER":rwx /etc/$PYRAMID_DISTR-control/
       getfacl /etc/$PYRAMID_DISTR-control/

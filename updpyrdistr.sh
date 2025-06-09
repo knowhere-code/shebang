@@ -77,7 +77,11 @@ PACKAGES=(
 # Обновление пакетов
 for pkg in "${PACKAGES[@]}"; do
   if $PACKAGES_MANAGER_CHECK_CMD "$pkg*" | $APT_OPT &> /dev/null; then
-    "${YES_COMMAND[@]}" | $PACKAGES_MANAGER_COMMAND ./"$pkg"*
+    if [ ${#YES_COMMAND[@]} -gt 0 ]; then
+      "${YES_COMMAND[@]}" | $PACKAGES_MANAGER_COMMAND ./"$pkg"*
+    else
+      $PACKAGES_MANAGER_COMMAND ./"$pkg"* # Без pipe!
+    fi
   fi
 done
 

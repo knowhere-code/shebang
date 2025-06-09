@@ -30,6 +30,14 @@ else
   exit 1
 fi
 
+YES_COMMAND=()
+
+if [ -n "$1" ] && [ "$1" = "-y" ]; then
+  if command -v yes &> /dev/null; then
+    YES_COMMAND=(yes "")
+  fi
+fi
+
 # Определение пакетного менеджера и команд
 if command -v apt &> /dev/null; then
   PACKAGES_MANAGER_COMMAND="apt install -y"
@@ -69,7 +77,7 @@ PACKAGES=(
 # Обновление пакетов
 for pkg in "${PACKAGES[@]}"; do
   if $PACKAGES_MANAGER_CHECK_CMD "$pkg*" | $APT_OPT &> /dev/null; then
-    $PACKAGES_MANAGER_COMMAND ./"$pkg"*
+    "${YES_COMMAND[@]}" | $PACKAGES_MANAGER_COMMAND ./"$pkg"*
   fi
 done
 

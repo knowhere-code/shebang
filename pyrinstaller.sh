@@ -147,4 +147,4 @@ for srv in "${SERVICES_CAPTION[@]}"; do
   sleep 5
 done
 
-systemctl status Pyramid* | cat
+systemctl status Pyramid* --no-pager

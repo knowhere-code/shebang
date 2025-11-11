@@ -5,7 +5,7 @@ set -euo pipefail
 # Параметры
 # ========================================
 DB_SUPERUSER="postgres"        # Суперпользователь PostgreSQL
-DB_NAME="pyramid2"             # Имя базы данных
+DB_NAME="pyramid"              # Имя базы данных
 DB_USER="pyramid"              # Имя создаваемого пользователя
 DB_PASS="1234"                 # Пароль пользователя
 

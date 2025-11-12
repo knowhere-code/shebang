@@ -22,9 +22,15 @@ fi
 echo "Проверяем подключение к PostgreSQL как $DB_SUPERUSER..."
 sudo -u $DB_SUPERUSER psql -c '\q'|| {
     echo "❌ Ошибка подключения к PostgreSQL под пользователем $DB_SUPERUSER"
-    echo "У пользователя $DB_SUPERUSER в /etc/postgresql/Версия/main/pg_hba.conf должен быть метод аунтификации peer"
-    echo "# TYPE  DATABASE     USER        ADDRESS      METHOD"
-    echo "  local   all       postgres                   peer"
+    echo -e "
+# ==============================================================================    
+# Для пользователя $DB_SUPERUSER в 
+# /etc/postgresql/версия pg/main/pg_hba.conf или /var/lib/pgsql/data/pg_hba.conf
+# должен быть выставлен метод аунтификации peer
+#
+# TYPE  DATABASE     USER        ADDRESS      METHOD
+# local   all       postgres                   peer
+# =============================================================================="
     exit 1
 }
 echo "Подключение успешно."

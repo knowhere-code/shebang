@@ -71,6 +71,12 @@ echo ""
 echo "Virtual machine: $(systemd-detect-virt)"
 
 echo ""
+if command -v hostname &>/dev/null; then
+    ip=$(hostname -I 2>/dev/null | awk '{print $1}')
+    [ -n "$ip" ] && echo "IP address: $ip" 
+fi
+
+echo ""
 echo "***********************************************************************"
 echo " SElinux info"
 echo "***********************************************************************"
@@ -253,6 +259,6 @@ echo "***********************************************************************"
 echo " Сonfiguration archiving..."
 echo "***********************************************************************"
 
-tar -zcf pyrconfig.tar.gz /etc/${PYRAMID_DISTR}-* /etc/systemd/system/Pyramid* && echo SUCCESS || echo FAIL
+tar -zcf pyrconfig.tar.gz /etc/${PYRAMID_DISTR}-* /etc/systemd/system/Pyramid* /var/cache/pyramid/RDContent/*Shards.xml && echo SUCCESS || echo FAIL
 
 echo "***********************************************************************"

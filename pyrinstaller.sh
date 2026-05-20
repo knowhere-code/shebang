@@ -41,12 +41,15 @@ if ! ls ./p20.* &> /dev/null; then
   exit 1
 fi
 
-# Проверка наличия установленных служб Пирамиды
-if ls /etc/systemd/system/Pyramid* &> /dev/null; then
-  echo "Pyramid services are already installed! Try running the update script."
-  systemctl status Pyramid* | cat
-  exit 1
-fi
+check_installed_pyr(){
+  # Проверка наличия установленных служб Пирамиды
+  if ls /etc/systemd/system/Pyramid* &> /dev/null; then
+    echo "Pyramid services are already installed! Try running the update script."
+    systemctl status Pyramid* | cat
+    exit 1
+  fi
+}
+check_installed_pyr
 
 # Определение пакетного менеджера
 #PACKAGES_MANAGER=$(command -v yum &> /dev/null && echo "yum" || echo "apt")
@@ -65,34 +68,36 @@ else
   exit 1
 fi
 
-# Массивы с именами пакетов и соответствующими шаблонами файлов
-PACKAGES=(
-  "$PYRAMID_DISTR-control"
-  "$PYRAMID_DISTR-collector"
-  "$PYRAMID_DISTR-user-web"
-  "$PYRAMID_DISTR-client-web"
-  "$PYRAMID_DISTR-integration"
-  "$PYRAMID_DISTR-csproxy"
-  "$PYRAMID_DISTR-usv"
-  "$PYRAMID_DISTR-opc-server"
-  "$PYRAMID_DISTR-opc-client"
-  "$PYRAMID_DISTR-fias"
+# Словарь с именами пакетов и соответствующими шаблонами файлов
+
+declare -A PACKAGES_DIC=(
+    [ControlService]="$PYRAMID_DISTR-control"
+    [CollectorService]="$PYRAMID_DISTR-collector"
+    [PyramidUserWeb]="$PYRAMID_DISTR-user-web"
+    [PyramidClientWeb]="$PYRAMID_DISTR-client-web"
+    [IntegrationService]="$PYRAMID_DISTR-integration"
+    [CSProxyService]="$PYRAMID_DISTR-csproxy"
+    [UsvTimeService]="$PYRAMID_DISTR-usv"
+    [OpcUaServersService]="$PYRAMID_DISTR-opc-server"
+    [OpcUaClientsService]="$PYRAMID_DISTR-opc-client"
 )
 
-SERVICES_CAPTION=(
-  "ControlService"
-  "CollectorService"
-  "PyramidUserWeb"
-  "PyramidClientWeb"
-  "CSProxyService"
-  "IntegrationService"
-  "UsvTimeService"
-  "OpcUaClientsService"
-  "OpcUaServersService"
-)
+
+if [ $# -eq 0 ]; then
+    # Получить все значения
+    values=("${PACKAGES_DIC[@]}")
+else
+    # Получить значения по ключам
+    values=()
+    for key in "$@"; do
+        values+=("${PACKAGES_DIC[$key]}")
+    done
+fi
+
+echo "${values[@]}"
 
 # Обновление/установка пакетов и настройка служб
-for pkg in "${PACKAGES[@]}"; do
+for pkg in "${values[@]}"; do
   echo "Trying to install $pkg"
   if ! ls ./"$pkg"* &> /dev/null; then 
     echo "$pkg distr not found!"
@@ -140,8 +145,8 @@ for pkg in "${PACKAGES[@]}"; do
 done
 
 # Установка и запуск служб
-for srv in "${SERVICES_CAPTION[@]}"; do
-  echo "Installing and starting $srv"
+for srv in "${!PACKAGES_DIC[@]}"; do
+  echo "Installing and starting demon $srv"
   $srv --install 2> /dev/null
   $srv --start 2> /dev/null
   sleep 5

@@ -14,8 +14,6 @@ HEIGHT=20
 # Exit codes.
 SUCCESS=0
 FAILURE=1
-PACKAGES_NOT_AVAILABLE=2
-
 
 localize() {
     if test "$LANG" = "ru_RU.UTF-8" || test "$LANG" = "ru_RU.utf8"; then
@@ -27,7 +25,6 @@ localize() {
 	BUTTON_no="Нет"
 	BUTTON_back="Назад"
 	BUTTON_cancel="Отмена"
-	BUTTON_enter_license="Ввести лицензию"
 	BUTTON_later="Позже"
 	BUTTON_install="Установить"
 	BUTTON_reinstall="Переустановить"
@@ -155,8 +152,7 @@ check_license() {
 check_installed_pyr() {
 	if ls /etc/systemd/system/Pyramid* &> /dev/null; then
 		whiptail --title  "$TITLE" --msgbox  "${TEXT_installed_pyr}." "${HEIGHT}" "${WIDTH}"
-		# todo переход в главное меню 
-		main_menu2
+		main_menu
 	fi
 }
 
@@ -174,15 +170,15 @@ check_distr_pyr(){
 
 notification() {
     whiptail --title "$TITLE" \
-        --msgbox "Скрипт выполнен" \
+        --msgbox "Скрипт выполнен. Код ошибки ${script_status}. Для выхода в главное меню нажите Ok." \
         --ok-button "Ok" \
         "${HEIGHT}" "${WIDTH}"
 
-		main_menu2
+		main_menu
     # if [ "${script_status}" -eq "${SUCCESS}" ] ; then
     #         exit ${SUCCESS}
     #     else
-    #         main_menu2
+    #         main_menu
     #     fi
 }
 
@@ -193,7 +189,7 @@ update_notification(){
 		press_anykey
 		notification
 	else
-		main_menu2
+		main_menu
 	fi
 }
 
@@ -204,12 +200,12 @@ createdb_notification(){
 		press_anykey
 		notification
 	else
-		main_menu2
+		main_menu
 	fi
 }
 
 press_anykey(){
-	read -s -n 1 -p "Нажмите любую клавишу..."
+	read -s -n 1 -p "Изучите лог на предмет ошибок! Для выхода в меню нажмите любую клавишу..."
 }
 
 install_pyr_menu(){
@@ -232,11 +228,11 @@ install_pyr_menu(){
 		press_anykey	
 		notification
 	else
-		main_menu2
+		main_menu
 	fi
 }
 
-main_menu1() {
+welcome_menu() {
     whiptail --title "$TITLE" \
         --yesno "$TEXT_main_menu" \
         --yes-button "$BUTTON_next" --no-button "$BUTTON_exit" \
@@ -244,10 +240,10 @@ main_menu1() {
     if [ "$?" -ne "${SUCCESS}" ] ; then
         exit "${SUCCESS}"
 	fi
-    main_menu2
+    main_menu
 }
 
-main_menu2(){
+main_menu(){
 	OPTION=$(whiptail --title  "$TITLE" --menu  "$TEXT_choose_activity" "${HEIGHT}" "${WIDTH}" 3 \
 	"1" "Установка" \
 	"2" "Обновление" \
@@ -278,7 +274,7 @@ main(){
 	test_acl
 	check_license
 	check_distr_pyr
-	main_menu1
+	welcome_menu
 }
 
 main "$@"

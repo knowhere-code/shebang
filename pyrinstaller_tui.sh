@@ -73,7 +73,7 @@ localize() {
 Нажмите $BUTTON_uninstall, чтобы удалить ${PRODUCT_NAME} с компьютера. Если вы хотите проверить или изменить настройки установки, нажмите $BUTTON_back."
 
 	TEXT_license_ok="Лицензия успешно проверена"
-	TEXT_license_bad="Ошибка проверки лицензии, ключ не найден"
+	TEXT_license_bad="Ошибка проверки лицензии, ключи не найдены. Ключи должны лежать в одной папке с дистрибутивами."
 	TEXT_installed_pyr="Службы ${PRODUCT_NAME} уже установлены. Попробуйте выполнить обновления"
 	TEXT_distr_pyr="Не найдены пакеты ${PRODUCT_NAME}! Установщик должен запускаться из папки с дистрибутивами"
 	
@@ -145,7 +145,7 @@ check_license() {
         license_output="$TEXT_license_ok"
     else
 		whiptail --title  "$TITLE" --msgbox  "${TEXT_license_bad}." "${HEIGHT}" "${WIDTH}"
-		exit "${FAILURE}"
+		main_menu
     fi
 }
 
@@ -244,7 +244,9 @@ welcome_menu() {
 }
 
 main_menu(){
-	OPTION=$(whiptail --title  "$TITLE" --menu  "$TEXT_choose_activity" "${HEIGHT}" "${WIDTH}" 3 \
+	OPTION=$(whiptail --title "$TITLE" --menu "$TEXT_choose_activity" \
+	--cancel-button "$BUTTON_exit" \
+	"${HEIGHT}" "${WIDTH}" 3 --notags \
 	"1" "Установка" \
 	"2" "Обновление" \
 	"3" "Создание БД PostgreSQL" 3>&1 1>&2 2>&3)
@@ -252,6 +254,7 @@ main_menu(){
 	if [ "$?" -eq "${SUCCESS}" ] ; then
 		case "$OPTION" in
 		"1") 
+			check_license
 			install_pyr_menu
 		;;
 		"2") 
@@ -272,7 +275,6 @@ main(){
 	localize
 	test_whiptail
 	test_acl
-	check_license
 	check_distr_pyr
 	welcome_menu
 }

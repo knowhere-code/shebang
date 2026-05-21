@@ -7,7 +7,7 @@ if [ "$(id -u)" != 0 ]; then
   sudo "$0" "$@"
   exit
 fi
-
+echo "Start $0"
 # PYRAMID_DISTR=pyramid
 
 # PS3='Select index distribution: '
@@ -81,7 +81,6 @@ declare -A PACKAGES_DIC=(
     [OpcUaServersService]="$PYRAMID_DISTR-opc-server"
     [OpcUaClientsService]="$PYRAMID_DISTR-opc-client"
 )
-
 
 if [ $# -eq 0 ]; then
     # Получить все значения

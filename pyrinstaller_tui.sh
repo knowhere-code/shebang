@@ -21,20 +21,7 @@ localize() {
 	TITLE="Установщик ${PRODUCT_NAME} beta"
 	BUTTON_next="Далее"
 	BUTTON_exit="Выход"
-	BUTTON_yes="Да"
-	BUTTON_no="Нет"
 	BUTTON_back="Назад"
-	BUTTON_cancel="Отмена"
-	BUTTON_later="Позже"
-	BUTTON_install="Установить"
-	BUTTON_reinstall="Переустановить"
-	BUTTON_uninstall="Удалить"
-	BUTTON_enter_serial="Ввести"
-	BUTTON_select="Выбрать"
-	BUTTON_add="Добавить"
-
-	MENU_reinstall="Переустановить пакеты ${PRODUCT_NAME}"
-	MENU_uninstall="Удалить пакеты ${PRODUCT_NAME}"
 
 	SHORT_cs="Служба управления"
 	SHORT_col="Служба автоматизированного сбора данных"
@@ -45,98 +32,32 @@ localize() {
 	SHORT_usv="Служба синхронизации времени"
 	SHORT_opcc="Служба OPC UA клиентов"
 	SHORT_opcs="Служба OPC UA серверов"
-
-
 	TEXT_need_root="
 Для работы установщика требуются привилегии администратора"
 	TEXT_main_menu="Добро пожаловать в мастер установки ${PRODUCT_NAME}
 
 Мастер установки позволит установить, обновить ${PRODUCT_NAME} с компьютера. Нажмите $BUTTON_next для продолжения или $BUTTON_exit для выхода из мастера установки."
-	TEXT_install_confirmation_head="Будут установлены:
-"
-	TEXT_install_confirmation_tail="Нажмите $BUTTON_install, чтобы начать установку. Чтобы вернуться и изменить настройки, нажмите $BUTTON_back."
+
 	TEXT_update_confirmation_tail="Нажмите $BUTTON_next, чтобы начать обновление. Чтобы вернуться и изменить настройки, нажмите $BUTTON_back."
 	TEXT_createdb_confirmation_tail="Нажмите $BUTTON_next, чтобы запустить скрипт создание базы данных Postgres. Чтобы вернуться и изменить настройки, нажмите $BUTTON_back."
 	TEXT_select_packages="Выберите набор для установки.
 
 Не устанавливайте пакеты без необходимости: это усложнит настройку и может снизить производительность."
 
-	TEXT_reinstall_confirm="Переустановить ${PRODUCT_NAME}
-
-Вы выбрали переустановить текущую установку ${PRODUCT_NAME}.
-
-Нажмите $BUTTON_reinstall, чтобы переустановить ${PRODUCT_NAME}. Если вы хотите проверить или изменить настройки установки, нажмите $BUTTON_back."
-	TEXT_uninstall_confirm="Удаление ${PRODUCT_NAME}
-
-Вы выбрали удалить ${PRODUCT_NAME} с компьютера.
-
-Нажмите $BUTTON_uninstall, чтобы удалить ${PRODUCT_NAME} с компьютера. Если вы хотите проверить или изменить настройки установки, нажмите $BUTTON_back."
-
 	TEXT_license_ok="Лицензия успешно проверена"
 	TEXT_license_bad="Ошибка проверки лицензии, ключи не найдены. Ключи должны лежать в одной папке с дистрибутивами."
 	TEXT_installed_pyr="Службы ${PRODUCT_NAME} уже установлены. Попробуйте выполнить обновления"
 	TEXT_distr_pyr="Не найдены пакеты ${PRODUCT_NAME}! Установщик должен запускаться из папки с дистрибутивами"
-	
 	TEXT_choose_activity="Выберите операцию, которую нужно выполнить."
-
-	ERROR_root="Ошибка: этот скрипт надо запускать от имени root или с помощью sudo"
     else	
-        PRODUCT_NAME="Pyramid 2.0"
-	TITLE="${PRODUCT_NAME} Setup beta"
-	BUTTON_next="Next"
-	BUTTON_exit="Exit"
-	BUTTON_yes="Yes"
-	BUTTON_no="No"
-	BUTTON_back="Back"
-	BUTTON_cancel="Cancel"
-	BUTTON_later="Later"
-	BUTTON_install="Install"
-	BUTTON_reinstall="Reinstall"
-	BUTTON_uninstall="Uninstall"
-	BUTTON_enter_serial="Enter"
-	BUTTON_select="Select"
-	BUTTON_add="Add"
-
-	MENU_reinstall="Reinstall ${PRODUCT_NAME} packages"
-	MENU_uninstall="Uninstall ${PRODUCT_NAME} packages"
-
-	TEXT_installed_pyr="Pyramid services are already installed! Try running the update script"
+		PRODUCT_NAME="Pyramid 2.0"
+		TITLE="${PRODUCT_NAME} Setup beta"
+		BUTTON_next="Next"
+		BUTTON_exit="Exit"
+		BUTTON_back="Back"
+		TEXT_installed_pyr="Pyramid services are already installed! Try running the update script"
     fi
 }
-
-is_astra_ver_17(){
-	if [ -f "/etc/astra_version" ] && grep "1.7" "/etc/astra_version"; then
-		return 0
-	else
-		return 1
-	fi
-}
-
-repo_file="/etc/apt/sources.list.d/pyr_custom.list"
-
-add_repo_apt(){
-    local repo_line="deb https://download.astralinux.ru/astra/stable/1.7_x86-64/repository-extended/ 1.7_x86-64 main contrib non-free backports experimental"
-    
-    echo "Временное добавление репозитория: $repo_line"
-
-    # Создание файла репозитория
-    echo "$repo_line" | tee "$repo_file" > /dev/null
-    
-    # Импорт GPG ключа (если нужен)
-    # wget -qO - https://example.com/key.gpg | apt-key add -
-    
-    # Обновление списка пакетов
-    echo "Выполнение apt update..."
-    apt update
-    
-    echo "Готово!"
-}
-
-del_repo_apt(){
-
-	[ -f "$repo_file" ] && rm -v $repo_file && apt update
-}
-
 
 test_whiptail_and_scripts() {
     if ! command -v whiptail >/dev/null 2>&1 ; then
@@ -194,16 +115,11 @@ check_installed_pyr() {
 }
 
 check_distr_pyr(){
-	if ls ./pyrnet-* &> /dev/null; then
-		PYRAMID_DISTR=pyrnet
-	elif ls ./pyramid-* &> /dev/null; then
-		PYRAMID_DISTR=pyramid
-	else
+	if ! ls ./pyrnet-* &> /dev/null || ! ls ./pyramid-* &> /dev/null; then
 		whiptail --title  "$TITLE" --msgbox "${TEXT_distr_pyr}." "${HEIGHT}" "${WIDTH}"
 		exit "${FAILURE}"
 	fi
 }
-
 
 notification() {
     whiptail --title "$TITLE" \
@@ -212,11 +128,6 @@ notification() {
         "${HEIGHT}" "${WIDTH}"
 
 		main_menu
-    # if [ "${script_status}" -eq "${SUCCESS}" ] ; then
-    #         exit ${SUCCESS}
-    #     else
-    #         main_menu
-    #     fi
 }
 
 update_notification(){
@@ -259,14 +170,10 @@ install_pyr_menu(){
 	"OpcUaClientsService" "$SHORT_opcc" OFF \
 	"OpcUaServersService" "$SHORT_opcs" OFF 3>&1 1>&2 2>&3)
 	
-	if [ "$?" -eq "${SUCCESS}" ] && [ -n "$DISTRPYR" ] ; then
-		
-		is_astra_ver_17 && add_repo_apt
+	if [ "$?" -eq "${SUCCESS}" ] && [ -n "$DISTRPYR" ]; then
 		# eval "bash ./pyrinstaller.sh ${DISTRPYR}"
 		echo "$DISTRPYR" | xargs bash ./pyrinstaller.sh
-
 		script_status="$?"
-		is_astra_ver_17 && del_repo_apt
 		press_anykey	
 		notification
 	else

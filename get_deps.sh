@@ -56,7 +56,7 @@ get_repo_url() {
         # Проверяем, не установлен ли вручную
         local status_line=$(echo "$policy" | grep "/var/lib/dpkg/status" | head -1)
         if [ -n "$status_line" ]; then
-            echo "установлен вручную (dpkg -i)"
+            echo "установлен вручную (dpkg -i) или репозиторий был отключен в sources.list"
         else
             echo "источник не определён"
         fi

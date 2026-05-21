@@ -6,7 +6,7 @@ if [ "$(id -u)" != 0 ]; then
   sudo "$0" "$@"
   exit
 fi
-
+echo "Start $0"
 # PYRAMID_DISTR=pyramid
 
 # PS3='Select index distribution: '
@@ -60,22 +60,38 @@ else
   exit 1
 fi 
 
-# Массивы с именами пакетов и соответствующими шаблонами файлов
-PACKAGES=(
-  "$PYRAMID_DISTR-control"
-  "$PYRAMID_DISTR-collector"
-  "$PYRAMID_DISTR-user-web"
-  "$PYRAMID_DISTR-client-web"
-  "$PYRAMID_DISTR-integration"
-  "$PYRAMID_DISTR-csproxy"
-  "$PYRAMID_DISTR-usv"
-  "$PYRAMID_DISTR-opc-server"
-  "$PYRAMID_DISTR-opc-client"
-  "$PYRAMID_DISTR-fias"
+
+# Список сервисов для проверки и обнговления
+declare -A SERVICES=(
+    ["$PYRAMID_DISTR-control"]="PyramidControl.service"
+    ["$PYRAMID_DISTR-collector"]="PyramidCollector.service"
+    ["$PYRAMID_DISTR-user-web"]="PyramidUserWeb.service"
+    ["$PYRAMID_DISTR-client-web"]="PyramidClientWeb.service"
+    ["$PYRAMID_DISTR-integration"]="PyramidIntegrationService.service"
+    ["$PYRAMID_DISTR-csproxy"]="PyramidProxyControl.service"
+    ["$PYRAMID_DISTR-usv"]="PyramidUsvTime.service"
+    ["$PYRAMID_DISTR-opc-server"]="PyramidOpcUaServersService.service"
+    ["$PYRAMID_DISTR-opc-client"]="PyramidOpcUaClientsService.service"
 )
 
+# Функция проверки, установлен ли сервис
+is_service_installed() {
+    local service_name="$1"
+    local service_file="/etc/systemd/system/${service_name}"
+    
+    if [ -f "$service_file" ]; then
+        return 0  # Установлен
+    else
+        return 1  # Не установлен
+    fi
+}
+
 # Обновление пакетов
-for pkg in "${PACKAGES[@]}"; do
+for pkg in "${!SERVICES[@]}"; do
+  if ! is_service_installed "${SERVICES[$pkg]}"; then 
+    echo "${pkg} сервис не найден, обновление пропущено."
+    continue
+  fi
   if $PACKAGES_MANAGER_CHECK_CMD "$pkg*" | $APT_OPT &> /dev/null; then
     if [ ${#YES_COMMAND[@]} -gt 0 ]; then
       "${YES_COMMAND[@]}" | $PACKAGES_MANAGER_COMMAND ./"$pkg"*

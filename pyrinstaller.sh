@@ -49,7 +49,7 @@ check_installed_pyr(){
     exit 1
   fi
 }
-check_installed_pyr
+#check_installed_pyr
 
 # Определение пакетного менеджера
 #PACKAGES_MANAGER=$(command -v yum &> /dev/null && echo "yum" || echo "apt")

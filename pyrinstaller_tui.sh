@@ -1,5 +1,5 @@
 #!/bin/bash
-# TUE cкрипт для установки пакетов Пирамиды. Скрипт должен находиться в одной папке с пакетами.
+# TUI cкрипт для установки пакетов Пирамиды. Скрипт должен находиться в одной папке с пакетами.
 
 # Проверка прав пользователя
 if [ "$(id -u)" != 0 ]; then
@@ -117,7 +117,7 @@ repo_file="/etc/apt/sources.list.d/pyr_custom.list"
 add_repo_apt(){
     local repo_line="deb https://download.astralinux.ru/astra/stable/1.7_x86-64/repository-extended/ 1.7_x86-64 main contrib non-free backports experimental"
     
-    echo "Добавление репозитория: $repo_line"
+    echo "Временное добавление репозитория: $repo_line"
 
     # Создание файла репозитория
     echo "$repo_line" | tee "$repo_file" > /dev/null
@@ -135,7 +135,6 @@ add_repo_apt(){
 del_repo_apt(){
 
 	[ -f "$repo_file" ] && rm -v $repo_file && apt update
-
 }
 
 

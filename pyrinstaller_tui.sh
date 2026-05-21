@@ -104,6 +104,40 @@ localize() {
     fi
 }
 
+is_astra_ver_17(){
+	if [ -f "/etc/astra_version" ] && grep "1.7" "/etc/astra_version"; then
+		return 0
+	else
+		return 1
+	fi
+}
+
+repo_file="/etc/apt/sources.list.d/pyr_custom.list"
+
+add_repo_apt(){
+    local repo_line="deb https://download.astralinux.ru/astra/stable/1.7_x86-64/repository-extended/ 1.7_x86-64 main contrib non-free backports experimental"
+    
+    echo "Добавление репозитория: $repo_line"
+
+    # Создание файла репозитория
+    echo "$repo_line" | tee "$repo_file" > /dev/null
+    
+    # Импорт GPG ключа (если нужен)
+    # wget -qO - https://example.com/key.gpg | apt-key add -
+    
+    # Обновление списка пакетов
+    echo "Выполнение apt update..."
+    apt update
+    
+    echo "Готово!"
+}
+
+del_repo_apt(){
+
+	[ -f "$repo_file" ] && rm -v $repo_file && apt update
+
+}
+
 
 test_whiptail_and_scripts() {
     if ! command -v whiptail >/dev/null 2>&1 ; then
@@ -227,9 +261,13 @@ install_pyr_menu(){
 	"OpcUaServersService" "$SHORT_opcs" OFF 3>&1 1>&2 2>&3)
 	
 	if [ "$?" -eq "${SUCCESS}" ] && [ -n "$DISTRPYR" ] ; then
+		
+		is_astra_ver_17 && add_repo_apt
 		# eval "bash ./pyrinstaller.sh ${DISTRPYR}"
 		echo "$DISTRPYR" | xargs bash ./pyrinstaller.sh
+
 		script_status="$?"
+		is_astra_ver_17 && del_repo_apt
 		press_anykey	
 		notification
 	else

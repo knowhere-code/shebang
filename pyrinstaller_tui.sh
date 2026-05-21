@@ -105,7 +105,7 @@ localize() {
 }
 
 
-test_whiptail() {
+test_whiptail_and_scripts() {
     if ! command -v whiptail >/dev/null 2>&1 ; then
         echo "Error: whiptail wasn't found" >&2
         if [ -f /etc/debian_version ] ||
@@ -118,6 +118,10 @@ test_whiptail() {
         else
             echo "Please run 'sudo yum install newt'" >&2
         fi
+        exit "${FAILURE}"
+    fi
+	if ! ls ./pyrinstaller.sh ./pyrupdater.sh > /dev/null 2>&1 ; then
+        echo "Error: necessary scripts pyrinstaller.sh and pyrupdater.sh were not found"
         exit "${FAILURE}"
     fi
 }
@@ -206,6 +210,7 @@ createdb_notification(){
 
 press_anykey(){
 	read -s -n 1 -p "Изучите лог на предмет ошибок! Для выхода в меню нажмите любую клавишу..."
+	echo -e ""
 }
 
 install_pyr_menu(){
@@ -273,7 +278,7 @@ main_menu(){
 main(){
 
 	localize
-	test_whiptail
+	test_whiptail_and_scripts
 	test_acl
 	check_distr_pyr
 	welcome_menu

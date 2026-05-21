@@ -21,6 +21,39 @@ echo "Start $0"
 #   esac
 # done  
 
+is_astra_ver_17(){
+	if [ -f "/etc/astra_version" ] && grep "1.7" "/etc/astra_version"; then
+		return 0
+	else
+		return 1
+	fi
+}
+
+repo_file="/etc/apt/sources.list.d/pyr_custom.list"
+
+add_repo_apt(){
+    local repo_line="deb https://download.astralinux.ru/astra/stable/1.7_x86-64/repository-extended/ 1.7_x86-64 main contrib non-free backports experimental"
+    
+    echo "Временное добавление репозитория: $repo_line"
+
+    # Создание файла репозитория
+    echo "$repo_line" | tee "$repo_file" > /dev/null
+    
+    # Импорт GPG ключа (если нужен)
+    # wget -qO - https://example.com/key.gpg | apt-key add -
+    
+    # Обновление списка пакетов
+    echo "Выполнение apt update..."
+    apt update
+    
+    echo "Готово!"
+}
+
+del_repo_apt(){
+	[ -f "$repo_file" ] && rm -v $repo_file && apt update
+}
+
+
 RED_OS=false
 
 if [ -e /etc/redos-release ] || grep "RED OS" /etc/os-release &> /dev/null || grep "altlinux" /etc/os-release &> /dev/null; then
@@ -95,6 +128,8 @@ fi
 
 echo "${values[@]}"
 
+is_astra_ver_17 && add_repo_apt
+
 # Обновление/установка пакетов и настройка служб
 for pkg in "${values[@]}"; do
   echo "Trying to install $pkg"
@@ -143,12 +178,14 @@ for pkg in "${values[@]}"; do
   esac
 done
 
+is_astra_ver_17 && del_repo_apt
+
 # Установка и запуск служб
 for srv in "${!PACKAGES_DIC[@]}"; do
   echo "Installing and starting demon $srv"
   $srv --install 2> /dev/null
   $srv --start 2> /dev/null
-  sleep 5
+  sleep 3
 done
 
 systemctl status Pyramid* --no-pager

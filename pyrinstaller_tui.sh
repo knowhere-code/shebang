@@ -115,7 +115,9 @@ check_installed_pyr() {
 }
 
 check_distr_pyr(){
-	if ! ls ./pyrnet-* &> /dev/null || ! ls ./pyramid-* &> /dev/null; then
+	if ls ./pyrnet-* &> /dev/null || ls ./pyramid-* &> /dev/null; then
+		echo "Пакеты для установки найдены!"
+	else
 		whiptail --title  "$TITLE" --msgbox "${TEXT_distr_pyr}." "${HEIGHT}" "${WIDTH}"
 		exit "${FAILURE}"
 	fi

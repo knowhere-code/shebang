@@ -22,8 +22,9 @@ echo "Start $0"
 # done  
 
 is_astra_ver_17(){
-	if [ -f "/etc/astra_version" ] && grep "1.7" "/etc/astra_version"; then
-		return 0
+	if [ -f "/etc/astra_version" ] && grep "1.7" "/etc/astra_version" &> /dev/null; then
+		echo "Обнаружена версия Astra 1.7.x"
+    return 0
 	else
 		return 1
 	fi

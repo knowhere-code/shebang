@@ -98,9 +98,8 @@ test_acl(){
 }
 
 check_license() {
-    ls ./p20.* &> /dev/null;
-    if [ "$?" -eq "${SUCCESS}" ] ; then
-        license_output="$TEXT_license_ok"
+    if ls ./p20.* &> /dev/null; then
+    	$TEXT_license_ok
     else
 		whiptail --title  "$TITLE" --msgbox  "${TEXT_license_bad}." "${HEIGHT}" "${WIDTH}"
 		main_menu

@@ -1,4 +1,6 @@
 #!/bin/bash
+# author: Ametov S.I.
+
 set -euo pipefail
 
 # ========================================

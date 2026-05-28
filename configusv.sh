@@ -1,4 +1,5 @@
 #!/bin/bash
+# author: Ametov S.I.
 
 function input_yes_no() {
     while read -r answer; do

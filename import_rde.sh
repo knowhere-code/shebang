@@ -1,4 +1,5 @@
 #!/bin/bash
+# author: Ametov S.I.
 
 PATH_TO_RDE=$1
 RW=

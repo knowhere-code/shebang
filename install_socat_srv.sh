@@ -1,4 +1,5 @@
 #!/bin/bash
+# author: Ametov S.I.
 # Скрипт создания службы виртуальных портов socat под UsvTimeService
 # IP адрес определяется переменной IP, порт - PORT, виртуальный COM порт - TTYS
 

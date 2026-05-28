@@ -1,4 +1,5 @@
 #!/bin/bash
+# author: Ametov S.I.
 # Выдать скрипту права sudo chmod +x infopyrdump.sh
 # Запускать командой sudo ./infopyrdump.sh или sudo bash ./infopyrdump.sh
 # На выходе архив с конфигурацией pyrconfig.tar.gz и лог infopyrdump.log

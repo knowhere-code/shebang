@@ -1,4 +1,5 @@
 #!/bin/bash
+# author: chat.deepseek.com
 
 DEB="$1"
 

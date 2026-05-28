@@ -15,6 +15,10 @@ HEIGHT=20
 SUCCESS=0
 FAILURE=1
 
+DB_NAME="pyramid" 
+DB_USER="pyramid" 
+DB_PASS="1234"
+
 localize() {
     if test "$LANG" = "ru_RU.UTF-8" || test "$LANG" = "ru_RU.utf8"; then
 		PRODUCT_NAME="Пирамида 2.0"
@@ -40,7 +44,16 @@ localize() {
 Мастер установки позволит установить, обновить ${PRODUCT_NAME} с компьютера. Нажмите $BUTTON_next для продолжения или $BUTTON_exit для выхода из мастера установки."
 
 		TEXT_update_confirmation_tail="Нажмите $BUTTON_next, чтобы начать обновление. Чтобы вернуться и изменить настройки, нажмите $BUTTON_back."
-		TEXT_createdb_confirmation_tail="Нажмите $BUTTON_next, чтобы запустить скрипт создание базы данных Postgres. Чтобы вернуться и изменить настройки, нажмите $BUTTON_back."
+		TEXT_createdb_confirmation_tail="Нажмите $BUTTON_next, чтобы запустить скрипт создания базы данных Postgres.
+Имя БД: $DB_NAME 
+Пользователь БД: $DB_USER 
+Пароль пользователя: $DB_PASS
+
+Чтобы вернуться и изменить настройки, нажмите $BUTTON_back."
+		TEXT_ask_db_name="Введите имя базы данных"
+		TEXT_ask_db_user="Введите имя владельца базы данных"
+		TEXT_ask_db_pass="Введите пароль владельца базы данных"
+		TEXT_warn_createdb="Внимание! Скрипт должен быть запущен локально на сервере СУБД Postgres."
 		TEXT_select_packages="Выберите набор для установки.
 
 Не устанавливайте пакеты без необходимости: это усложнит настройку и может снизить производительность."
@@ -70,11 +83,17 @@ localize() {
 		SHORT_usv="Time Synchronization Service"
 		SHORT_opcc="OPC UA Client Service"
 		SHORT_opcs="OPC UA Server Service"
-		TEXT_need_root="Administrator privileges are required to run the installer"
+		TEXT_need_root="Administrator privileges are required to run the installer."
 		TEXT_main_menu="Welcome to the ${PRODUCT_NAME} Setup Wizard
 The setup wizard will help you install or update ${PRODUCT_NAME} on this computer. Click $BUTTON_next to continue or $BUTTON_exit to exit the setup wizard."
 		TEXT_update_confirmation_tail="Click $BUTTON_next to start the update. To go back and change settings, click $BUTTON_back."
-		TEXT_createdb_confirmation_tail="Click $BUTTON_next to run the Postgres database creation script. To go back and change settings, click $BUTTON_back."
+		TEXT_createdb_confirmation_tail="Press $BUTTON_next to run the Postgres database creation script. 
+DB name: $DB_NAME 
+DB user: $DB_USER 
+User password: $DB_PASS
+
+To go back and change the settings, press $BUTTON_back."
+		TEXT_warn_createdb="Warning! The script must be run locally on the Postgres database server."
 		TEXT_select_packages="Select the installation package set.
 Do not install packages unless necessary: this may complicate configuration and reduce performance."
 		TEXT_license_ok="License successfully verified"
@@ -170,9 +189,45 @@ update_notification(){
 	fi
 }
 
+ask_db_name(){
+	DB_NAME=$(whiptail --title  "$TITLE" --inputbox  "$TEXT_ask_db_name" 10 60 "$DB_NAME" 3>&1 1>&2 2>&3)
+	
+	if [ "$?" -eq "${SUCCESS}" ] ; then
+		ask_db_user
+	else
+		main_menu
+	fi
+}
+
+ask_db_user(){
+	DB_USER=$(whiptail --title  "$TITLE" --inputbox  "$TEXT_ask_db_user" 10 60 "$DB_USER" 3>&1 1>&2 2>&3)
+	
+	if [ "$?" -eq "${SUCCESS}" ] ; then
+		ask_db_pass
+	else
+		main_menu
+	fi
+}
+
+ask_db_pass(){
+	DB_PASS=$(whiptail --title  "$TITLE" --inputbox  "$TEXT_ask_db_pass" 10 60 "$DB_PASS" 3>&1 1>&2 2>&3)
+	
+	if [ "$?" -eq "${SUCCESS}" ] ; then
+		localize #обновить переменные в TEXT_createdb_confirmation_tail
+		createdb_notification
+	else
+		main_menu
+	fi
+}
+
+
+warn_createdb(){
+	whiptail --title  "$TITLE" --msgbox  "$TEXT_warn_createdb" 10 60
+}
+
 createdb_notification(){
 	if (whiptail --title  "$TITLE" --yes-button "$BUTTON_next" --no-button "$BUTTON_back" --yesno "$TEXT_createdb_confirmation_tail" "${HEIGHT}" "${WIDTH}") then
-		bash ./create_pgdb.sh
+		bash ./create_pgdb.sh "${DB_NAME}" "${DB_USER}" "${DB_PASS}"
 		script_status="$?"
 		press_anykey
 		notification
@@ -238,8 +293,9 @@ main_menu(){
 		"2") 
 			update_notification
 		;;
-		"3") 
-			createdb_notification
+		"3")
+			warn_createdb 
+			ask_db_name	
 		;;	
 		esac
 	

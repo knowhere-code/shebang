@@ -1,6 +1,7 @@
 #!/bin/bash
-# TUI script for installing Pyramid 2.0 Net packages. The script must be located in the same folder as the packages.
 # author: Ametov S.I.
+# TUI script for installing Pyramid 2.0 Net packages. The script must be located in the same folder as the packages.
+
 
 if [ "$(id -u)" != 0 ]; then
   echo "${TEXT_need_root} 'sudo $0'"
@@ -9,7 +10,7 @@ if [ "$(id -u)" != 0 ]; then
 fi
 
 WIDTH=80
-HEIGHT=20
+HEIGHT=20	
 
 # Exit codes.
 SUCCESS=0
@@ -38,33 +39,31 @@ localize() {
 		SHORT_usv="Служба синхронизации времени"
 		SHORT_opcc="Служба OPC UA клиентов"
 		SHORT_opcs="Служба OPC UA серверов"
-		TEXT_need_root="Для работы установщика требуются привилегии администратора"
+		TEXT_need_root="Для работы установщика требуются привилегии администратора."
 		TEXT_main_menu="Добро пожаловать в мастер установки ${PRODUCT_NAME}
 
 Мастер установки позволит установить, обновить ${PRODUCT_NAME} с компьютера. Нажмите $BUTTON_next для продолжения или $BUTTON_exit для выхода из мастера установки."
 
 		TEXT_update_confirmation_tail="Нажмите $BUTTON_next, чтобы начать обновление. Чтобы вернуться и изменить настройки, нажмите $BUTTON_back."
 		TEXT_createdb_confirmation_tail="Нажмите $BUTTON_next, чтобы запустить скрипт создания базы данных Postgres.
-Имя БД: $DB_NAME 
-Пользователь БД: $DB_USER 
-Пароль пользователя: $DB_PASS
-
-Чтобы вернуться и изменить настройки, нажмите $BUTTON_back."
-		TEXT_ask_db_name="Введите имя базы данных"
-		TEXT_ask_db_user="Введите имя владельца базы данных"
-		TEXT_ask_db_pass="Введите пароль владельца базы данных"
+Чтобы вернуться и изменить настройки, нажмите $BUTTON_back.
+"
+		TEXT_ask_db_name="Введите имя базы данных:"
+		TEXT_ask_db_user="Введите имя владельца базы данных:"
+		TEXT_ask_db_pass="Введите пароль владельца базы данных:"
 		TEXT_warn_createdb="Внимание! Скрипт должен быть запущен локально на сервере СУБД Postgres."
 		TEXT_select_packages="Выберите набор для установки.
 
-Не устанавливайте пакеты без необходимости: это усложнит настройку и может снизить производительность."
+Не устанавливайте пакеты без необходимости и вне вашей лицензии - это усложнит настройку и может снизить производительность."
 
-		TEXT_license_ok="Лицензия успешно проверена"
+		TEXT_license_ok="Лицензионные ключи найдены."
 		TEXT_license_bad="Ошибка проверки лицензии, ключи не найдены. Ключи должны лежать в одной папке с дистрибутивами."
-		TEXT_installed_pyr="Службы ${PRODUCT_NAME} уже установлены. Попробуйте выполнить обновления"
-		TEXT_distr_pyr="Не найдены пакеты ${PRODUCT_NAME}! Установщик должен запускаться из папки с дистрибутивами"
+		TEXT_installed_pyr="Службы ${PRODUCT_NAME} уже установлены. Попробуйте выполнить обновления."
+		TEXT_distr_pyr="Не найдены пакеты ${PRODUCT_NAME}! Установщик должен запускаться из папки с дистрибутивами."
+		TEXT_distr_ok="Дистрибутивы найдены."
 		TEXT_choose_activity="Выберите операцию, которую нужно выполнить."
 		TEXT_anykey="Изучите лог на предмет ошибок! Для выхода в меню нажмите любую клавишу..."
-		TEXT_result_script="Скрипт выполнен. Код ошибки ${script_status}. Для выхода в главное меню нажите Ok."
+		TEXT_result_script="Скрипт выполнен. Для выхода в главное меню нажите Ok."
     else	
 		PRODUCT_NAME="Pyramid 2.0"
 		TITLE="${PRODUCT_NAME} Installer beta"
@@ -88,18 +87,16 @@ localize() {
 The setup wizard will help you install or update ${PRODUCT_NAME} on this computer. Click $BUTTON_next to continue or $BUTTON_exit to exit the setup wizard."
 		TEXT_update_confirmation_tail="Click $BUTTON_next to start the update. To go back and change settings, click $BUTTON_back."
 		TEXT_createdb_confirmation_tail="Press $BUTTON_next to run the Postgres database creation script. 
-DB name: $DB_NAME 
-DB user: $DB_USER 
-User password: $DB_PASS
-
-To go back and change the settings, press $BUTTON_back."
+To go back and change the settings, press $BUTTON_back.
+"
 		TEXT_warn_createdb="Warning! The script must be run locally on the Postgres database server."
 		TEXT_select_packages="Select the installation package set.
 Do not install packages unless necessary: this may complicate configuration and reduce performance."
-		TEXT_license_ok="License successfully verified"
+		TEXT_license_ok="License successfully verified."
 		TEXT_license_bad="License verification failed, keys not found. The keys must be located in the same folder as the distributions."
-		TEXT_installed_pyr="${PRODUCT_NAME} services are already installed. Try performing an update"
-		TEXT_distr_pyr="${PRODUCT_NAME} packages not found! The installer must be run from the distribution folder"
+		TEXT_distr_ok="Distribution packages found."
+		TEXT_installed_pyr="${PRODUCT_NAME} services are already installed. Try performing an update."
+		TEXT_distr_pyr="${PRODUCT_NAME} packages not found! The installer must be run from the distribution folder."
 		TEXT_choose_activity="Select the operation to perform."
 		TEXT_anykey="Check the log for errors! Press any key to return to the menu..."
 		TEXT_result_script="Script executed. Error code ${script_status}. Press Ok to return to the main menu."
@@ -146,7 +143,7 @@ test_acl(){
 
 check_license() {
     if ls ./p20.* &> /dev/null; then
-    	$TEXT_license_ok
+    	echo "$TEXT_license_ok"
     else
 		whiptail --title  "$TITLE" --msgbox  "${TEXT_license_bad}." "${HEIGHT}" "${WIDTH}"
 		main_menu
@@ -162,7 +159,7 @@ check_installed_pyr() {
 
 check_distr_pyr(){
 	if ls ./pyrnet-* &> /dev/null || ls ./pyramid-* &> /dev/null; then
-		echo "Distribution packages found, starting the installer..."
+		echo "$TEXT_distr_ok"
 	else
 		whiptail --title  "$TITLE" --msgbox "${TEXT_distr_pyr}." "${HEIGHT}" "${WIDTH}"
 		exit "${FAILURE}"
@@ -172,8 +169,7 @@ check_distr_pyr(){
 notification() {
     whiptail --title "$TITLE" \
         --msgbox "${TEXT_result_script}" \
-        --ok-button "Ok" \
-        "${HEIGHT}" "${WIDTH}"
+        10 "${WIDTH}"
 
 		main_menu
 }
@@ -190,7 +186,7 @@ update_notification(){
 }
 
 ask_db_name(){
-	DB_NAME=$(whiptail --title  "$TITLE" --inputbox  "$TEXT_ask_db_name" 10 60 "$DB_NAME" 3>&1 1>&2 2>&3)
+	DB_NAME=$(whiptail --title  "$TITLE" --inputbox  "$TEXT_ask_db_name" 10 "${WIDTH}" "$DB_NAME" 3>&1 1>&2 2>&3)
 	
 	if [ "$?" -eq "${SUCCESS}" ] ; then
 		ask_db_user
@@ -200,7 +196,7 @@ ask_db_name(){
 }
 
 ask_db_user(){
-	DB_USER=$(whiptail --title  "$TITLE" --inputbox  "$TEXT_ask_db_user" 10 60 "$DB_USER" 3>&1 1>&2 2>&3)
+	DB_USER=$(whiptail --title  "$TITLE" --inputbox  "$TEXT_ask_db_user" 10 "${WIDTH}" "$DB_USER" 3>&1 1>&2 2>&3)
 	
 	if [ "$?" -eq "${SUCCESS}" ] ; then
 		ask_db_pass
@@ -210,23 +206,30 @@ ask_db_user(){
 }
 
 ask_db_pass(){
-	DB_PASS=$(whiptail --title  "$TITLE" --inputbox  "$TEXT_ask_db_pass" 10 60 "$DB_PASS" 3>&1 1>&2 2>&3)
+	DB_PASS=$(whiptail --title  "$TITLE" --inputbox  "$TEXT_ask_db_pass" 10 "${WIDTH}" "$DB_PASS" 3>&1 1>&2 2>&3)
 	
 	if [ "$?" -eq "${SUCCESS}" ] ; then
-		localize #обновить переменные в TEXT_createdb_confirmation_tail
 		createdb_notification
 	else
 		main_menu
 	fi
 }
 
+echo_db_info(){
+
+echo "
+DB Name: $DB_NAME 
+DB User: $DB_USER 
+User Password: $DB_PASS"
+
+}
 
 warn_createdb(){
-	whiptail --title  "$TITLE" --msgbox  "$TEXT_warn_createdb" 10 60
+	whiptail --title  "$TITLE" --msgbox  "$TEXT_warn_createdb" 10 "${WIDTH}"
 }
 
 createdb_notification(){
-	if (whiptail --title  "$TITLE" --yes-button "$BUTTON_next" --no-button "$BUTTON_back" --yesno "$TEXT_createdb_confirmation_tail" "${HEIGHT}" "${WIDTH}") then
+	if (whiptail --title  "$TITLE" --yes-button "$BUTTON_next" --no-button "$BUTTON_back" --yesno "$TEXT_createdb_confirmation_tail $(echo_db_info)" "${HEIGHT}" "${WIDTH}") then
 		bash ./create_pgdb.sh "${DB_NAME}" "${DB_USER}" "${DB_PASS}"
 		script_status="$?"
 		press_anykey
@@ -238,7 +241,7 @@ createdb_notification(){
 
 press_anykey(){
 	read -s -n 1 -p "${TEXT_anykey}"
-	echo -e
+	echo
 }
 
 install_pyr_menu(){

@@ -10,7 +10,8 @@ if [ "$(id -u)" != 0 ]; then
 fi
 
 WIDTH=80
-HEIGHT=20	
+HEIGHT=20
+HEIGHT_LOW=10	
 
 # Exit codes.
 SUCCESS=0
@@ -166,10 +167,10 @@ check_distr_pyr(){
 	fi
 }
 
-notification() {
+noti_script_done() {
     whiptail --title "$TITLE" \
         --msgbox "${TEXT_result_script}" \
-        10 "${WIDTH}"
+        "${HEIGHT_LOW}" "${WIDTH}"
 
 		main_menu
 }
@@ -179,14 +180,14 @@ update_notification(){
 		bash ./pyrupdater.sh -y
 		script_status="$?"
 		press_anykey
-		notification
+		noti_script_done
 	else
 		main_menu
 	fi
 }
 
 ask_db_name(){
-	DB_NAME=$(whiptail --title  "$TITLE" --inputbox  "$TEXT_ask_db_name" 10 "${WIDTH}" "$DB_NAME" 3>&1 1>&2 2>&3)
+	DB_NAME=$(whiptail --title  "$TITLE" --inputbox  "$TEXT_ask_db_name" "${HEIGHT_LOW}" "${WIDTH}" "$DB_NAME" 3>&1 1>&2 2>&3)
 	
 	if [ "$?" -eq "${SUCCESS}" ] ; then
 		ask_db_user
@@ -196,7 +197,7 @@ ask_db_name(){
 }
 
 ask_db_user(){
-	DB_USER=$(whiptail --title  "$TITLE" --inputbox  "$TEXT_ask_db_user" 10 "${WIDTH}" "$DB_USER" 3>&1 1>&2 2>&3)
+	DB_USER=$(whiptail --title  "$TITLE" --inputbox  "$TEXT_ask_db_user" "${HEIGHT_LOW}" "${WIDTH}" "$DB_USER" 3>&1 1>&2 2>&3)
 	
 	if [ "$?" -eq "${SUCCESS}" ] ; then
 		ask_db_pass
@@ -206,7 +207,7 @@ ask_db_user(){
 }
 
 ask_db_pass(){
-	DB_PASS=$(whiptail --title  "$TITLE" --inputbox  "$TEXT_ask_db_pass" 10 "${WIDTH}" "$DB_PASS" 3>&1 1>&2 2>&3)
+	DB_PASS=$(whiptail --title  "$TITLE" --inputbox  "$TEXT_ask_db_pass" "${HEIGHT_LOW}" "${WIDTH}" "$DB_PASS" 3>&1 1>&2 2>&3)
 	
 	if [ "$?" -eq "${SUCCESS}" ] ; then
 		createdb_notification
@@ -233,7 +234,7 @@ createdb_notification(){
 		bash ./create_pgdb.sh "${DB_NAME}" "${DB_USER}" "${DB_PASS}"
 		script_status="$?"
 		press_anykey
-		notification
+		noti_script_done
 	else
 		main_menu
 	fi
@@ -262,7 +263,7 @@ install_pyr_menu(){
 		echo "$DISTRPYR" | xargs bash ./pyrinstaller.sh
 		script_status="$?"
 		press_anykey	
-		notification
+		noti_script_done
 	else
 		main_menu
 	fi

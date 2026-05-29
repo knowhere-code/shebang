@@ -146,14 +146,14 @@ check_license() {
     if ls ./p20.* &> /dev/null; then
     	echo "$TEXT_license_ok"
     else
-		whiptail --title  "$TITLE" --msgbox  "${TEXT_license_bad}." "${HEIGHT}" "${WIDTH}"
+		whiptail --title  "$TITLE" --msgbox  "${TEXT_license_bad}" "${HEIGHT}" "${WIDTH}"
 		main_menu
     fi
 }
 
 check_installed_pyr() {
 	if ls /etc/systemd/system/Pyramid* &> /dev/null; then
-		whiptail --title  "$TITLE" --msgbox  "${TEXT_installed_pyr}." "${HEIGHT}" "${WIDTH}"
+		whiptail --title  "$TITLE" --msgbox  "${TEXT_installed_pyr}" "${HEIGHT}" "${WIDTH}"
 		main_menu
 	fi
 }
@@ -162,7 +162,7 @@ check_distr_pyr(){
 	if ls ./pyrnet-* &> /dev/null || ls ./pyramid-* &> /dev/null; then
 		echo "$TEXT_distr_ok"
 	else
-		whiptail --title  "$TITLE" --msgbox "${TEXT_distr_pyr}." "${HEIGHT}" "${WIDTH}"
+		whiptail --title  "$TITLE" --msgbox "${TEXT_distr_pyr}" "${HEIGHT}" "${WIDTH}"
 		exit "${FAILURE}"
 	fi
 }

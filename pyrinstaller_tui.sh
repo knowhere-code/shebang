@@ -241,7 +241,7 @@ createdb_notification(){
 }
 
 press_anykey(){
-	read -s -n 1 -p "${TEXT_anykey}"
+	read -r -s -n 1 -p "${TEXT_anykey}"
 	echo
 }
 

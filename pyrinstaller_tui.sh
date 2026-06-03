@@ -3,12 +3,6 @@
 # TUI script for installing Pyramid 2.0 Net packages. The script must be located in the same folder as the packages.
 
 
-if [ "$(id -u)" != 0 ]; then
-  echo "${TEXT_need_root} 'sudo $0'"
-  sudo "$0" "$@"
-  exit
-fi
-
 WIDTH=80
 HEIGHT=20
 HEIGHT_LOW=10	
@@ -40,7 +34,6 @@ localize() {
 		SHORT_usv="Служба синхронизации времени"
 		SHORT_opcc="Служба OPC UA клиентов"
 		SHORT_opcs="Служба OPC UA серверов"
-		TEXT_need_root="Для работы установщика требуются привилегии администратора."
 		TEXT_main_menu="Добро пожаловать в мастер установки ${PRODUCT_NAME}
 
 Мастер установки позволит установить, обновить ${PRODUCT_NAME} с компьютера. Нажмите $BUTTON_next для продолжения или $BUTTON_exit для выхода из мастера установки."
@@ -83,7 +76,6 @@ localize() {
 		SHORT_usv="Time Synchronization Service"
 		SHORT_opcc="OPC UA Client Service"
 		SHORT_opcs="OPC UA Server Service"
-		TEXT_need_root="Administrator privileges are required to run the installer."
 		TEXT_main_menu="Welcome to the ${PRODUCT_NAME} Setup Wizard
 The setup wizard will help you install or update ${PRODUCT_NAME} on this computer. Click $BUTTON_next to continue or $BUTTON_exit to exit the setup wizard."
 		TEXT_update_confirmation_tail="Click $BUTTON_next to start the update. To go back and change settings, click $BUTTON_back."
@@ -316,5 +308,11 @@ main(){
 	check_distr_pyr
 	welcome_menu
 }
+
+if [ "$(id -u)" != 0 ]; then
+  echo "Administrator privileges are required to run the installer. 'sudo $0'"
+  sudo "$0" "$@"
+  exit
+fi
 
 main "$@"

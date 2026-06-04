@@ -218,7 +218,7 @@ User Password: $DB_PASS"
 }
 
 warn_createdb(){
-	whiptail --title  "$TITLE" --msgbox  "$TEXT_warn_createdb" 10 "${WIDTH}"
+	whiptail --title  "$TITLE" --msgbox  "$TEXT_warn_createdb" "${HEIGHT_LOW}" "${WIDTH}"
 }
 
 createdb_notification(){

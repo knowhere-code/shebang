@@ -31,7 +31,7 @@ is_astra_ver_17(){
 	fi
 }
 
-repo_file="/etc/apt/sources.list.d/pyr_custom.list"
+REPO_FILE="/etc/apt/sources.list.d/pyr_custom.list"
 
 add_repo_apt(){
     local repo_line="deb https://download.astralinux.ru/astra/stable/1.7_x86-64/repository-extended/ 1.7_x86-64 main contrib non-free backports experimental"
@@ -39,7 +39,7 @@ add_repo_apt(){
     echo "Временное добавление репозитория: $repo_line"
 
     # Создание файла репозитория
-    echo "$repo_line" | tee "$repo_file" > /dev/null
+    echo "$repo_line" | tee "$REPO_FILE" > /dev/null
     
     # Импорт GPG ключа (если нужен)
     # wget -qO - https://example.com/key.gpg | apt-key add -
@@ -52,7 +52,7 @@ add_repo_apt(){
 }
 
 del_repo_apt(){
-	[ -f "$repo_file" ] && rm -v $repo_file && apt update
+	[ -f "$REPO_FILE" ] && rm -v $REPO_FILE && apt update
 }
 
 

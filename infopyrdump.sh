@@ -55,6 +55,12 @@ echo "***********************************************************************"
 echo " System information"
 echo "***********************************************************************"
 
+# Активна ли RDP сессия
+if [ -n "$XRDP_SESSION" ]; then
+    echo "RDP SESSION ACTIVE"
+fi
+echo ""
+
 echo "Kernel $(uname -r); Machine $(uname -m)"
 cat /etc/*release*
 echo ""

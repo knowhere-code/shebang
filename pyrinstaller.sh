@@ -24,7 +24,7 @@ echo "Start $0"
 
 is_astra_ver_17(){
 	if [ -f "/etc/astra_version" ] && grep "1.7" "/etc/astra_version" &> /dev/null; then
-		echo "Обнаружена версия Astra 1.7.x"
+		echo "Detected Astra version 1.7.x"
     return 0
 	else
 		return 1
@@ -36,7 +36,7 @@ REPO_FILE="/etc/apt/sources.list.d/pyr_custom.list"
 add_repo_apt(){
     local repo_line="deb https://download.astralinux.ru/astra/stable/1.7_x86-64/repository-extended/ 1.7_x86-64 main contrib non-free backports experimental"
     
-    echo "Временное добавление репозитория: $repo_line"
+    echo "Temporarily adding repository: $repo_line"
 
     # Создание файла репозитория
     echo "$repo_line" | tee "$REPO_FILE" > /dev/null
@@ -45,10 +45,10 @@ add_repo_apt(){
     # wget -qO - https://example.com/key.gpg | apt-key add -
     
     # Обновление списка пакетов
-    echo "Выполнение apt update..."
+    echo "Running apt update..."
     apt update
     
-    echo "Готово!"
+    echo "Done!"
 }
 
 del_repo_apt(){
@@ -84,7 +84,6 @@ check_installed_pyr(){
     exit 1
   fi
 }
-#check_installed_pyr
 
 # Определение пакетного менеджера
 #PACKAGES_MANAGER=$(command -v yum &> /dev/null && echo "yum" || echo "apt")
@@ -104,7 +103,6 @@ else
 fi
 
 # Словарь с именами пакетов и соответствующими шаблонами файлов
-
 declare -A PACKAGES_DIC=(
     [ControlService]="$PYRAMID_DISTR-control"
     [CollectorService]="$PYRAMID_DISTR-collector"
@@ -117,11 +115,24 @@ declare -A PACKAGES_DIC=(
     [OpcUaClientsService]="$PYRAMID_DISTR-opc-client"
 )
 
+PACKAGES_ORDER=(
+    ControlService
+    CollectorService
+    PyramidUserWeb
+    PyramidClientWeb
+    IntegrationService
+    CSProxyService
+    UsvTimeService
+    OpcUaServersService
+    OpcUaClientsService
+)
+
+# Если нет входящих аргументов у скрипта, то проходим по словарю PACKAGES_DIC 
 if [ $# -eq 0 ]; then
     # Получить все значения
     values=("${PACKAGES_DIC[@]}")
 else
-    # Получить значения по ключам
+    # Получить значения по ключам входящих аргументов пришедших из tui
     values=()
     for key in "$@"; do
         values+=("${PACKAGES_DIC[$key]}")
@@ -130,6 +141,8 @@ fi
 
 echo "${values[@]}"
 
+
+# Если это астра 1.7 то для установки потребуется доп. репозиторий.
 is_astra_ver_17 && add_repo_apt
 
 # Обновление/установка пакетов и настройка служб
@@ -182,9 +195,9 @@ done
 
 is_astra_ver_17 && del_repo_apt
 
-# Установка и запуск служб
-for srv in "${!PACKAGES_DIC[@]}"; do
-  echo "Installing and starting demon $srv"
+# Установка и запуск служб согласно правильному порядку
+for srv in "${PACKAGES_ORDER[@]}"; do
+  echo "Installing and starting daemon $srv"
   $srv --install 2> /dev/null
   $srv --start 2> /dev/null
   sleep 3

@@ -41,19 +41,19 @@ fi
 
 # Определение пакетного менеджера и команд
 if command -v apt &> /dev/null; then
-  PACKAGES_MANAGER_COMMAND="apt install -y"
+  PACKAGES_MANAGER_CMD="apt install -y"
   PACKAGES_MANAGER_CHECK_CMD="dpkg-query -l"
   APT_OPT="grep ii"
 elif command -v yum &> /dev/null; then
-  PACKAGES_MANAGER_COMMAND="yum install -y"
+  PACKAGES_MANAGER_CMD="yum install -y"
   PACKAGES_MANAGER_CHECK_CMD="rpm -qa --last"
   APT_OPT="grep x86"
  elif command -v dnf &> /dev/null; then
-  PACKAGES_MANAGER_COMMAND="dnf install -y"
+  PACKAGES_MANAGER_CMD="dnf install -y"
   PACKAGES_MANAGER_CHECK_CMD="rpm -qa --last"
   APT_OPT="grep x86" 
 elif command -v apt-get &> /dev/null; then #alt linux
-  PACKAGES_MANAGER_COMMAND="apt-get install -y"
+  PACKAGES_MANAGER_CMD="apt-get install -y"
   PACKAGES_MANAGER_CHECK_CMD="rpm -qa --last"
   APT_OPT="grep x86"
 else
@@ -62,7 +62,7 @@ else
 fi 
 
 
-# Список сервисов для проверки и обнговления
+# Список сервисов для проверки и обновления
 declare -A SERVICES=(
     ["$PYRAMID_DISTR-control"]="PyramidControl.service"
     ["$PYRAMID_DISTR-collector"]="PyramidCollector.service"
@@ -73,6 +73,18 @@ declare -A SERVICES=(
     ["$PYRAMID_DISTR-usv"]="PyramidUsvTime.service"
     ["$PYRAMID_DISTR-opc-server"]="PyramidOpcUaServersService.service"
     ["$PYRAMID_DISTR-opc-client"]="PyramidOpcUaClientsService.service"
+)
+
+SERVICES_ORDER=(
+    "$PYRAMID_DISTR-control"
+    "$PYRAMID_DISTR-collector"
+    "$PYRAMID_DISTR-user-web"
+    "$PYRAMID_DISTR-client-web"
+    "$PYRAMID_DISTR-integration"
+    "$PYRAMID_DISTR-csproxy"
+    "$PYRAMID_DISTR-usv"
+    "$PYRAMID_DISTR-opc-server"
+    "$PYRAMID_DISTR-opc-client"
 )
 
 # Функция проверки, установлен ли сервис
@@ -88,16 +100,16 @@ is_service_installed() {
 }
 
 # Обновление пакетов
-for pkg in "${!SERVICES[@]}"; do
+for pkg in "${SERVICES_ORDER[@]}"; do
   if ! is_service_installed "${SERVICES[$pkg]}"; then 
-    echo "${pkg} сервис не найден, обновление пропущено."
+    echo "${pkg} service not found, update skipped."
     continue
   fi
   if $PACKAGES_MANAGER_CHECK_CMD "$pkg*" | $APT_OPT &> /dev/null; then
     if [ ${#YES_COMMAND[@]} -gt 0 ]; then
-      "${YES_COMMAND[@]}" | $PACKAGES_MANAGER_COMMAND ./"$pkg"*
+      "${YES_COMMAND[@]}" | $PACKAGES_MANAGER_CMD ./"$pkg"*
     else
-      $PACKAGES_MANAGER_COMMAND ./"$pkg"* # Без pipe!
+      $PACKAGES_MANAGER_CMD ./"$pkg"* # Без pipe!
     fi
   fi
 done

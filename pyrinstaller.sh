@@ -22,6 +22,26 @@ echo "Start $0"
 #   esac
 # done  
 
+# Проверка различных признаков RDP-сессии
+is_rdp_session() {
+    if [ -n "$XRDP_SESSION" ] || \
+       [ -n "$RDP_SESSION" ] || \
+       [ -n "$WINDOW_MANAGER_RDP" ] || \
+       [[ "$DISPLAY" =~ :10[0-9]* ]] || \
+       [[ "$DISPLAY" == *":10"* ]] || \
+       [ -n "$PULSE_RDP_SESSION" ]; then
+        return 0  # RDP сессия активна
+    fi
+    return 1
+}
+
+if is_rdp_session ; then
+  
+  echo "Detected RDP session. Install abort!"
+  exit 1
+
+fi
+
 is_astra_ver_17(){
 	if [ -f "/etc/astra_version" ] && grep "1.7" "/etc/astra_version" &> /dev/null; then
 		echo "Detected Astra version 1.7.x"
@@ -145,6 +165,17 @@ echo "${values[@]}"
 # Если это астра 1.7 то для установки потребуется доп. репозиторий.
 is_astra_ver_17 && add_repo_apt
 
+
+if [ -n "$SUDO_USER" ]; then 
+  PYR_USER=$SUDO_USER
+else # SUDO_USER может и не быть например в ALT он выключен
+  PYR_USER=$(logname) # может дать пустое значение через RDP
+  [ -z "$PYR_USER" ] && PYR_USER=$USER
+fi
+
+echo "Detected user: $PYR_USER"
+
+
 # Обновление/установка пакетов и настройка служб
 for pkg in "${values[@]}"; do
   echo "Trying to install $pkg"
@@ -160,7 +191,7 @@ for pkg in "${values[@]}"; do
         exit 1
       fi
       chmod -v a=rw /etc/$PYRAMID_DISTR-control/p20.*
-      setfacl -m u:"$SUDO_USER":rwx /etc/$PYRAMID_DISTR-control/
+      setfacl -m u:"$PYR_USER":rwx /etc/$PYRAMID_DISTR-control/
       getfacl /etc/$PYRAMID_DISTR-control/
       if $RED_OS; then
         CSConfigConsole
@@ -168,8 +199,8 @@ for pkg in "${values[@]}"; do
       ;;
     "$PYRAMID_DISTR-collector")
       echo "Adding user to dialout group"
-      if ! adduser "$SUDO_USER" dialout &> /dev/null; then
-        usermod -a -G dialout "$SUDO_USER" # for RedOS
+      if ! adduser "$PYR_USER" dialout &> /dev/null; then
+        usermod -a -G dialout "$PYR_USER" # for RedOS
       fi
       ;;
 

@@ -55,8 +55,21 @@ echo "***********************************************************************"
 echo " System information"
 echo "***********************************************************************"
 
-# Активна ли RDP сессия
-if [ -n "$XRDP_SESSION" ]; then
+
+# Проверка различных признаков RDP-сессии
+is_rdp_session() {
+    if [ -n "$XRDP_SESSION" ] || \
+       [ -n "$RDP_SESSION" ] || \
+       [ -n "$WINDOW_MANAGER_RDP" ] || \
+       [[ "$DISPLAY" =~ :10[0-9]* ]] || \
+       [[ "$DISPLAY" == *":10"* ]] || \
+       [ -n "$PULSE_RDP_SESSION" ]; then
+        return 0  # RDP сессия активна
+    fi
+    return 1 
+}
+
+if is_rdp_session; then
     echo "RDP SESSION ACTIVE"
 fi
 echo ""

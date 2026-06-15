@@ -149,8 +149,10 @@ PACKAGES_ORDER=(
 
 # Если нет входящих аргументов у скрипта, то проходим по словарю PACKAGES_DIC 
 if [ $# -eq 0 ]; then
-    # Получить все значения
-    values=("${PACKAGES_DIC[@]}")
+    for srv in "${PACKAGES_ORDER[@]}"; do 
+      # Получить все значения
+      values+=("${PACKAGES_DIC[$srv]}")
+    done
 else
     # Получить значения по ключам входящих аргументов пришедших из tui
     values=()
@@ -194,7 +196,11 @@ for pkg in "${values[@]}"; do
       setfacl -m u:"$PYR_USER":rwx /etc/$PYRAMID_DISTR-control/
       getfacl /etc/$PYRAMID_DISTR-control/
       if $RED_OS; then
-        CSConfigConsole
+        echo "Start CSConfigConsole"
+        # без этого < /dev/tty, CSConfigConsole все ответы проставляются автоматически это как то связано с stdin 
+        # при echo "$DISTRPYR" | xargs bash ./pyrinstaller.sh то stdin для pyrinstaller.sh становится pipe от echo, а не терминал.
+        # Поэтому CSConfigConsole внутри вашего скрипта видит, что stdin — не интерактивный терминал, и автоматически выбирает значения по умолчанию.
+        CSConfigConsole < /dev/tty 
       fi
       ;;
     "$PYRAMID_DISTR-collector")
@@ -206,13 +212,15 @@ for pkg in "${values[@]}"; do
 
     "$PYRAMID_DISTR-user-web")
       if $RED_OS; then
-        PyramidUserWebConfigConsole
+        echo "Start PyramidUserWebConfigConsole"
+        PyramidUserWebConfigConsole < /dev/tty
       fi
     ;;
 
     "$PYRAMID_DISTR-client-web")
       if $RED_OS; then
-        PyramidClientWebConfigConsole
+        echo "Start PyramidClientWebConfigConsole"
+        PyramidClientWebConfigConsole < /dev/tty 
       fi
     ;;
 

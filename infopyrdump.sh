@@ -205,6 +205,11 @@ echo " Pyramid dir etc ControlService info"
 echo "***********************************************************************"
 
 ls -ld /etc/${PYRAMID_DISTR}-control/
+ls -l /etc/${PYRAMID_DISTR}-control/
+
+echo ""
+ls -l /usr/lib/${PYRAMID_DISTR}-control/p20.*
+
 echo ""
 getfacl /etc/${PYRAMID_DISTR}-control/
 

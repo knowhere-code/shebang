@@ -73,6 +73,7 @@ declare -A SERVICES=(
     ["$PYRAMID_DISTR-usv"]="PyramidUsvTime.service"
     ["$PYRAMID_DISTR-opc-server"]="PyramidOpcUaServersService.service"
     ["$PYRAMID_DISTR-opc-client"]="PyramidOpcUaClientsService.service"
+    ["$PYRAMID_DISTR-fias"]="PyramidFiasService.service"
 )
 
 SERVICES_ORDER=(
@@ -85,6 +86,7 @@ SERVICES_ORDER=(
     "$PYRAMID_DISTR-usv"
     "$PYRAMID_DISTR-opc-server"
     "$PYRAMID_DISTR-opc-client"
+    "$PYRAMID_DISTR-fias"
 )
 
 # Функция проверки, установлен ли сервис

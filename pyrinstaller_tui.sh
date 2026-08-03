@@ -101,10 +101,10 @@ test_whiptail_and_scripts() {
         echo "Error: whiptail wasn't found" >&2
         if [ -f /etc/debian_version ] ||
            [ -f /etc/mcst_version ] ||
-            grep Ubuntu /etc/lsb-release >/dev/null 2>&1
+            grep "Ubuntu" /etc/lsb-release >/dev/null 2>&1
         then
             echo "Please run 'sudo apt-get install whiptail'" >&2
-        elif [ -f /etc/altlinux-release ] || grep "altlinux" "/etc/os-release"; then
+        elif [ -f /etc/altlinux-release ] || grep "altlinux" "/etc/os-release" >/dev/null 2>&1; then
             echo "Please run 'sudo apt-get install newt52'" >&2
         else
             echo "Please run 'sudo yum install newt'" >&2

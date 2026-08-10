@@ -92,7 +92,7 @@ Do not install packages unless necessary: this may complicate configuration and 
 		TEXT_distr_pyr="${PRODUCT_NAME} packages not found! The installer must be run from the distribution folder."
 		TEXT_choose_activity="Select the operation to perform."
 		TEXT_anykey="Check the log for errors! Press any key to return to the menu..."
-		TEXT_result_script="Script executed. Error code ${script_status}. Press Ok to return to the main menu."
+		TEXT_result_script="Script executed. Press Ok to return to the main menu."
     fi
 }
 

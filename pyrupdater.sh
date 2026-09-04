@@ -61,19 +61,23 @@ else
   exit 1
 fi 
 
-
+SYSTEMD_PATH="/etc/systemd/system"
 # Список сервисов для проверки и обновления
 declare -A SERVICES=(
-    ["$PYRAMID_DISTR-control"]="PyramidControl.service"
-    ["$PYRAMID_DISTR-collector"]="PyramidCollector.service"
-    ["$PYRAMID_DISTR-user-web"]="PyramidUserWeb.service"
-    ["$PYRAMID_DISTR-client-web"]="PyramidClientWeb.service"
-    ["$PYRAMID_DISTR-integration"]="PyramidIntegrationService.service"
-    ["$PYRAMID_DISTR-csproxy"]="PyramidProxyControl.service"
-    ["$PYRAMID_DISTR-usv"]="PyramidUsvTime.service"
-    ["$PYRAMID_DISTR-opc-server"]="PyramidOpcUaServersService.service"
-    ["$PYRAMID_DISTR-opc-client"]="PyramidOpcUaClientsService.service"
-    ["$PYRAMID_DISTR-fias"]="PyramidFiasService.service"
+    ["$PYRAMID_DISTR-control"]="$SYSTEMD_PATH/PyramidControl.service"
+    ["$PYRAMID_DISTR-collector"]="$SYSTEMD_PATH/PyramidCollector.service"
+    ["$PYRAMID_DISTR-user-web"]="$SYSTEMD_PATH/PyramidUserWeb.service"
+    ["$PYRAMID_DISTR-client-web"]="$SYSTEMD_PATH/PyramidClientWeb.service"
+    ["$PYRAMID_DISTR-integration"]="$SYSTEMD_PATH/PyramidIntegrationService.service"
+    ["$PYRAMID_DISTR-csproxy"]="$SYSTEMD_PATH/PyramidProxyControl.service"
+    ["$PYRAMID_DISTR-usv"]="$SYSTEMD_PATH/PyramidUsvTime.service"
+    ["$PYRAMID_DISTR-opc-server"]="$SYSTEMD_PATH/PyramidOpcUaServersService.service"
+    ["$PYRAMID_DISTR-opc-client"]="$SYSTEMD_PATH/PyramidOpcUaClientsService.service"
+    ["$PYRAMID_DISTR-fias"]="$SYSTEMD_PATH/PyramidFiasService.service"
+    # исключение objstudio не является сервисом поэтому проверяем исполняемый файл 
+    ["$PYRAMID_DISTR-objstudio"]="/usr/lib/${PYRAMID_DISTR}-objstudio/ObjStudioConsole"
+
+
 )
 
 SERVICES_ORDER=(
@@ -87,14 +91,14 @@ SERVICES_ORDER=(
     "$PYRAMID_DISTR-opc-server"
     "$PYRAMID_DISTR-opc-client"
     "$PYRAMID_DISTR-fias"
+    "$PYRAMID_DISTR-objstudio"
 )
 
 # Функция проверки, установлен ли сервис
 is_service_installed() {
-    local service_name="$1"
-    local service_file="/etc/systemd/system/${service_name}"
+    local service_path="$1"
     
-    if [ -f "$service_file" ]; then
+    if [ -f "$service_path" ]; then
         return 0  # Установлен
     else
         return 1  # Не установлен

@@ -91,10 +91,12 @@ else
   exit 1
 fi
 
-if ! ls ./p20.* &> /dev/null; then
-  echo "Licension keys not found!"
-  exit 1
-fi
+check_license() {
+  if ! ls ./p20.* &> /dev/null; then
+    echo "Licension keys not found!"
+    exit 1
+  fi
+}
 
 check_installed_pyr(){
   # Проверка наличия установленных служб Пирамиды
@@ -133,6 +135,7 @@ declare -A PACKAGES_DIC=(
     [UsvTimeService]="$PYRAMID_DISTR-usv"
     [OpcUaServersService]="$PYRAMID_DISTR-opc-server"
     [OpcUaClientsService]="$PYRAMID_DISTR-opc-client"
+    [ObjectStudio]="$PYRAMID_DISTR-objstudio"
 )
 
 PACKAGES_ORDER=(
@@ -145,6 +148,7 @@ PACKAGES_ORDER=(
     UsvTimeService
     OpcUaServersService
     OpcUaClientsService
+    ObjectStudio
 )
 
 # Если нет входящих аргументов у скрипта, то проходим по словарю PACKAGES_DIC 
@@ -162,6 +166,11 @@ else
 fi
 
 echo "${values[@]}"
+
+
+if echo "${values[@]}" | grep "ControlService" &> /dev/null; then
+  check_license
+fi
 
 
 # Если это астра 1.7 то для установки потребуется доп. репозиторий.
@@ -197,7 +206,7 @@ for pkg in "${values[@]}"; do
       getfacl /etc/$PYRAMID_DISTR-control/
       if $RED_OS; then
         echo "Start CSConfigConsole"
-        # без этого < /dev/tty, CSConfigConsole все ответы проставляются автоматически это как то связано с stdin 
+        # без этого < /dev/tty, CSConfigConsole все ответы проставляются автоматически это как то связано с stdin, а это нам не нужно
         # при echo "$DISTRPYR" | xargs bash ./pyrinstaller.sh то stdin для pyrinstaller.sh становится pipe от echo, а не терминал.
         # Поэтому CSConfigConsole внутри вашего скрипта видит, что stdin — не интерактивный терминал, и автоматически выбирает значения по умолчанию.
         CSConfigConsole < /dev/tty 
@@ -236,7 +245,7 @@ is_astra_ver_17 && del_repo_apt
 
 # Установка и запуск служб согласно правильному порядку
 for srv in "${PACKAGES_ORDER[@]}"; do
-  echo "Installing and starting daemon $srv"
+  echo "Try installing and starting daemon $srv"
   $srv --install 2> /dev/null
   $srv --start 2> /dev/null
   sleep 3

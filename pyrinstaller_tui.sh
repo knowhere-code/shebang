@@ -32,6 +32,7 @@ localize() {
 		SHORT_csp="Служба представления данных"
 		SHORT_int="Служба информобмена"
 		SHORT_usv="Служба синхронизации времени"
+		SHORT_obs="Object Studio"
 		SHORT_opcc="Служба OPC UA клиентов"
 		SHORT_opcs="Служба OPC UA серверов"
 		TEXT_main_menu="Добро пожаловать в мастер установки ${PRODUCT_NAME}
@@ -74,6 +75,7 @@ localize() {
 		SHORT_csp="Data Presentation Service"
 		SHORT_int="Information Exchange Service"
 		SHORT_usv="Time Synchronization Service"
+		SHORT_obs="Object Studio"
 		SHORT_opcc="OPC UA Client Service"
 		SHORT_opcs="OPC UA Server Service"
 		TEXT_main_menu="Welcome to the ${PRODUCT_NAME} Setup Wizard
@@ -239,7 +241,7 @@ press_anykey(){
 
 install_pyr_menu(){
 	DISTRPYR=$(whiptail --title "$TITLE" --checklist \
-	"$TEXT_select_packages" "${HEIGHT}" "${WIDTH}" 9 \
+	"$TEXT_select_packages" "${HEIGHT}" "${WIDTH}" 10 \
 	"ControlService" "$SHORT_cs" ON \
 	"CollectorService" "$SHORT_col" ON \
 	"PyramidUserWeb" "$SHORT_uw" ON \
@@ -248,9 +250,13 @@ install_pyr_menu(){
 	"CSProxyService" "$SHORT_csp" OFF \
 	"UsvTimeService" "$SHORT_usv" OFF \
 	"OpcUaClientsService" "$SHORT_opcc" OFF \
+	"ObjectStudio" "$SHORT_obs" OFF\
 	"OpcUaServersService" "$SHORT_opcs" OFF 3>&1 1>&2 2>&3)
 	
 	if [ "$?" -eq "${SUCCESS}" ] && [ -n "$DISTRPYR" ]; then
+		if echo "$DISTRPYR" | grep "ControlService" &> /dev/null; then
+			check_license
+		fi
 		# eval "bash ./pyrinstaller.sh ${DISTRPYR}"
 		echo "$DISTRPYR" | xargs bash ./pyrinstaller.sh
 		script_status="$?"
@@ -283,7 +289,6 @@ main_menu(){
 	if [ "$?" -eq "${SUCCESS}" ] ; then
 		case "$OPTION" in
 		"1") 
-			check_license
 			install_pyr_menu
 		;;
 		"2") 

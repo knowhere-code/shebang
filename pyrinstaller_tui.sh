@@ -250,8 +250,8 @@ install_pyr_menu(){
 	"CSProxyService" "$SHORT_csp" OFF \
 	"UsvTimeService" "$SHORT_usv" OFF \
 	"OpcUaClientsService" "$SHORT_opcc" OFF \
-	"OpcUaServersService" "$SHORT_obs" OFF\
-	"ObjectStudio" "$SHORT_opcs" OFF 3>&1 1>&2 2>&3)
+	"OpcUaServersService" "$SHORT_opcs" OFF\
+	"ObjectStudio" "$SHORT_obs" OFF 3>&1 1>&2 2>&3)
 	
 	if [ "$?" -eq "${SUCCESS}" ] && [ -n "$DISTRPYR" ]; then
 		if echo "$DISTRPYR" | grep "ControlService" &> /dev/null; then

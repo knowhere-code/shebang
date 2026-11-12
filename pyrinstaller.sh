@@ -51,6 +51,13 @@ is_astra_ver_17(){
 	fi
 }
 
+set_datetime_cap(){
+    echo "Setting date time capabilities"
+    setcap -v cap_sys_time+pie /bin/date
+    setcap -v cap_sys_time,cap_dac_override+eip /sbin/hwclock
+     
+}
+
 REPO_FILE="/etc/apt/sources.list.d/pyr_custom.list"
 
 add_repo_apt(){
@@ -233,14 +240,10 @@ for pkg in "${values[@]}"; do
       fi
     ;;
 
-    "$PYRAMID_DISTR-usv")
-      echo "Setting capabilities"
-      setcap -v cap_sys_time+pie /bin/date
-      setcap -v cap_sys_time,cap_dac_override+eip /sbin/hwclock
-      ;;
   esac
 done
 
+set_datetime_cap
 is_astra_ver_17 && del_repo_apt
 
 # Установка и запуск служб согласно правильному порядку

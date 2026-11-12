@@ -31,6 +31,13 @@ else
   exit 1
 fi
 
+set_datetime_cap(){
+    echo "Setting date time capabilities"
+    setcap -v cap_sys_time+pie /bin/date
+    setcap -v cap_sys_time,cap_dac_override+eip /sbin/hwclock
+     
+}
+
 YES_COMMAND=()
 
 if [ -n "$1" ] && [ "$1" = "-y" ]; then
@@ -119,5 +126,7 @@ for pkg in "${SERVICES_ORDER[@]}"; do
     fi
   fi
 done
+
+set_datetime_cap
 
 $PACKAGES_MANAGER_CHECK_CMD "$PYRAMID_DISTR-*" | $APT_OPT
